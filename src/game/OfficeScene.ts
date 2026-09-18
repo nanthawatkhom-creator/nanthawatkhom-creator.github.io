@@ -593,6 +593,7 @@ export class OfficeScene {
       visual.alertIconGroup.visible = true;
       visual.smokeParticles.visible = true;
     } else {
+      visual.data.malwareSavedProgress = undefined;
       visual.screenMesh.material = this.matNormalScreen;
       visual.alertIconGroup.visible = false;
       visual.smokeParticles.visible = false;

@@ -5,7 +5,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { GameEngine } from './game/GameEngine';
-import { ComputerData, GamePhase, GameOverReason, HackerInfo } from './types';
+import { ComputerData, GamePhase, GameOverReason, HackerInfo, MalwareSavedProgress } from './types';
 import { GameHUD } from './components/GameHUD';
 import { MiniGameModal } from './components/MiniGameModal';
 import { MalwareBattleModal } from './components/MalwareBattleModal';
@@ -28,6 +28,13 @@ export default function App() {
   const [brokenCount, setBrokenCount] = useState<number>(2);
   const [malwareCount, setMalwareCount] = useState<number>(0);
   const [hackerWhackedCount, setHackerWhackedCount] = useState<number>(0);
+
+  // Combo & Speed Boost Skill
+  const [comboCount, setComboCount] = useState<number>(0);
+  const [comboTimer, setComboTimer] = useState<number>(0);
+  const [isSpeedBoosted, setIsSpeedBoosted] = useState<boolean>(false);
+  const [speedBoostTimeLeft, setSpeedBoostTimeLeft] = useState<number>(0);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const [nearComputer, setNearComputer] = useState<ComputerData | null>(null);
   const [activeMiniGameComp, setActiveMiniGameComp] = useState<ComputerData | null>(null);
@@ -69,6 +76,14 @@ export default function App() {
       },
       onHackerStateChange: (info) => {
         setHackerInfo(info);
+      },
+      onComboChange: (combo, timeLeft) => {
+        setComboCount(combo);
+        setComboTimer(timeLeft);
+      },
+      onSpeedBoostChange: (active, timeLeft) => {
+        setIsSpeedBoosted(active);
+        setSpeedBoostTimeLeft(timeLeft);
       },
       onComputerBrokenAlert: () => {
         if (engineRef.current) {
@@ -125,10 +140,16 @@ export default function App() {
     setGamePhase('gameover');
     setActiveMiniGameComp(null);
     setActiveMalwareComp(null);
+    setIsSpeedBoosted(false);
+    setSpeedBoostTimeLeft(0);
+    setComboCount(0);
+    setComboTimer(0);
     if (reason === 'malware') {
       soundManager.playSystemBreach();
     }
     if (engineRef.current) {
+      engineRef.current.deactivateSpeedBoost();
+      engineRef.current.resetCombo();
       engineRef.current.setPaused(true);
     }
   };
@@ -151,6 +172,10 @@ export default function App() {
     setActiveMiniGameComp(null);
     setActiveMalwareComp(null);
     setHackerAlertMsg(null);
+    setIsSpeedBoosted(false);
+    setSpeedBoostTimeLeft(0);
+    setComboCount(0);
+    setComboTimer(0);
 
     if (engineRef.current) {
       // Repair all computers first, then break 2 fresh ones
@@ -158,6 +183,10 @@ export default function App() {
       all.forEach((comp) => {
         engineRef.current?.markComputerRepaired(comp.id);
       });
+      // Explicitly deactivate speed boost and combo triggered by batch repair during restart
+      engineRef.current.deactivateSpeedBoost();
+      engineRef.current.resetCombo();
+
       engineRef.current.breakRandomComputer();
       engineRef.current.breakRandomComputer();
       engineRef.current.setPaused(false);
@@ -201,6 +230,17 @@ export default function App() {
     }
     setActiveMalwareComp(null);
     setGamePhase('playing');
+  };
+
+  const handleMalwareBattlePause = (computer: ComputerData, progress: MalwareSavedProgress) => {
+    if (engineRef.current) {
+      engineRef.current.saveComputerMalwareProgress(computer.id, progress);
+      engineRef.current.setPaused(false);
+    }
+    setActiveMalwareComp(null);
+    setGamePhase('playing');
+    setToastMessage(`💾 บันทึกความคืบหน้าของ ${computer.name} แล้ว! สามารถกลับมาซ่อมต่อได้ตลอดเวลา`);
+    setTimeout(() => setToastMessage(null), 4000);
   };
 
   const handleMalwareBattleFail = (computer: ComputerData, reason: string) => {
@@ -276,6 +316,11 @@ export default function App() {
           onToggleMute={handleToggleMute}
           isBgmActive={isBgmActive}
           onToggleBgm={handleToggleBgm}
+          comboCount={comboCount}
+          comboTimer={comboTimer}
+          isSpeedBoosted={isSpeedBoosted}
+          speedBoostTimeLeft={speedBoostTimeLeft}
+          toastMessage={toastMessage}
         />
       )}
 
@@ -308,8 +353,17 @@ export default function App() {
           computer={activeMalwareComp}
           onSuccess={handleMalwareBattleSuccess}
           onFail={handleMalwareBattleFail}
+          onPauseSession={handleMalwareBattlePause}
           onClose={() => {
-            handleMalwareBattleFail(activeMalwareComp, 'ยกเลิก');
+            if (activeMalwareComp.malwareSavedProgress) {
+              handleMalwareBattlePause(activeMalwareComp, activeMalwareComp.malwareSavedProgress);
+            } else {
+              if (engineRef.current) {
+                engineRef.current.setPaused(false);
+              }
+              setActiveMalwareComp(null);
+              setGamePhase('playing');
+            }
           }}
         />
       )}

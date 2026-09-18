@@ -38,6 +38,7 @@ export class CharacterModel {
   public currentYaw: number = 0;
   public targetYaw: number = 0;
   public isAttacking: boolean = false;
+  public isSpeedBoosted: boolean = false;
   private onAttackComplete?: () => void;
 
   constructor() {
@@ -661,15 +662,15 @@ export class CharacterModel {
 
     } else if (this.animState === 'walk' || this.animState === 'run') {
       const isRun = this.animState === 'run';
-      const cadence = isRun ? 14 : 9;
-      const legAmp = isRun ? 0.75 : 0.55;
-      const armAmp = isRun ? 0.85 : 0.6;
+      const cadence = isRun ? (this.isSpeedBoosted ? 22 : 14) : 9;
+      const legAmp = isRun ? (this.isSpeedBoosted ? 0.95 : 0.75) : 0.55;
+      const armAmp = isRun ? (this.isSpeedBoosted ? 1.05 : 0.85) : 0.6;
       const cycle = t * cadence;
 
       // Vertical bounce & forward tilt
-      const bounce = Math.abs(Math.sin(cycle)) * (isRun ? 0.07 : 0.04);
+      const bounce = Math.abs(Math.sin(cycle)) * (isRun ? (this.isSpeedBoosted ? 0.09 : 0.07) : 0.04);
       this.pelvis.position.y = 0.98 + bounce;
-      this.torso.rotation.x = isRun ? 0.22 : 0.1;
+      this.torso.rotation.x = isRun ? (this.isSpeedBoosted ? 0.32 : 0.22) : 0.1;
       this.torso.rotation.y = Math.sin(cycle) * 0.12;
 
       // Left leg

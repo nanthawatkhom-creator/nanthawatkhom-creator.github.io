@@ -1,5 +1,13 @@
 export type ComputerStatus = 'normal' | 'broken' | 'repairing' | 'malware';
 
+export interface MalwareSavedProgress {
+  stageIndex: number;
+  typedCount: number;
+  firewallIntegrity: number;
+  commands: { command: string; script: string }[];
+  terminalLogs: string[];
+}
+
 export interface ComputerData {
   id: string;
   name: string; // e.g. "โต๊ะ A-1 (ฝ่ายขาย)"
@@ -11,6 +19,19 @@ export interface ComputerData {
   repairDifficulty: number; // 1 to 3
   sectionName: string; // "โซน A (ฝ่ายการตลาด)", etc.
   malwareType?: string; // e.g. "Trojan.Agent.X", "Ransomware.Cryptor"
+  malwareSavedProgress?: MalwareSavedProgress;
+}
+
+export interface ComboState {
+  count: number;
+  timer: number;
+  maxTimer: number;
+}
+
+export interface SpeedBoostState {
+  active: boolean;
+  timeLeft: number;
+  maxDuration: number;
 }
 
 export interface CableConnection {

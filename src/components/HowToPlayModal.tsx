@@ -61,13 +61,22 @@ export const HowToPlayModal: React.FC<HowToPlayModalProps> = ({ onClose, isIniti
               3
             </div>
             <div>
-              <strong className="text-pink-300">👾 คอมติดมัลแวร์ (Malware Battle):</strong> จอคอมจะกลายเป็นสีม่วงกระพริบหัวกะโหลก กด <strong className="text-pink-400 font-mono">[E]</strong> เพื่อเปิดเทอร์มินัล พิมพ์คีย์บอร์ดตามตัวอักษรเพื่อรันโค้ดสู้ Hacker และกู้คืนระบบ!
+              <strong className="text-pink-300">👾 คอมติดมัลแวร์ (Malware Battle & Save State):</strong> จอคอมจะกลายเป็นสีม่วงกระพริบหัวกะโหลก กด <strong className="text-pink-400 font-mono">[E]</strong> เพื่อเปิดเทอร์มินัลพิมพ์โค้ดสู้ Hacker <strong className="text-cyan-300 underline">หากยังแก้ไม่เสร็จ สามารถกด [พักการแก้ & ออก] หรือกด [Esc] แล้วกลับมาซ่อมต่อจากจุดเดิมได้โดยไม่ต้องเริ่มใหม่!</strong>
+            </div>
+          </div>
+
+          <div className="flex items-start space-x-3 p-3 rounded-xl bg-amber-950/40 border border-amber-500/60 shadow-lg shadow-orange-950/40">
+            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-amber-500/30 text-amber-300 font-black">
+              4
+            </div>
+            <div>
+              <strong className="text-amber-300">🔥 สกิลวิ่งเร็วติดไฟ (Fire Speed Boost) & Combo:</strong> ทุกครั้งที่ซ่อมคอมพิวเตอร์เสร็จ คุณจะได้รับสกิลพิเศษ <strong className="text-white">วิ่งเร็วติดไฟลุกโชน (Speed Boost)</strong> นาน 6.5 วินาที พร้อมสะสม Combo ช่วยให้วิ่งไปจัดการคอมเครื่องต่อไปได้ทันท่วงที!
             </div>
           </div>
 
           <div className="flex items-start space-x-3 p-3 rounded-xl bg-rose-950/40 border border-rose-600/60 shadow-lg shadow-rose-950/40 animate-pulse">
             <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-rose-500/30 text-rose-300 font-black">
-              4
+              5
             </div>
             <div>
               <strong className="text-rose-300">💀 กฎความยากระดับวิกฤต (Hardcore Game Over):</strong> หากในออฟฟิศมีคอมพิวเตอร์โดนไวรัสมัลแวร์ครบ <strong className="text-white underline">2 เครื่อง</strong> จะเกิด System Breach และ <strong className="text-rose-400">Game Over ทันที</strong>! อย่าปล่อยให้มัลแวร์ค้างในระบบนานจนแพร่กระจายผ่าน LAN
@@ -76,7 +85,7 @@ export const HowToPlayModal: React.FC<HowToPlayModalProps> = ({ onClose, isIniti
 
           <div className="flex items-start space-x-3 p-3 rounded-xl bg-blue-500/10 border border-blue-800/40">
             <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-blue-500/20 text-blue-400 font-bold">
-              5
+              6
             </div>
             <div>
               <strong className="text-white">เวลา 3 นาที:</strong> ซ่อมคอมพิวเตอร์ ปกป้องเครือข่าย และสะสมคะแนนให้ได้ระดับ S+ ก่อนหมดกะ!

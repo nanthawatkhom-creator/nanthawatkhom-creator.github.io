@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { CharacterModel } from './CharacterModel';
 import { OfficeScene } from './OfficeScene';
 import { HackerModel } from './HackerModel';
-import { ComputerData, HackerInfo, HackerState } from '../types';
+import { ComputerData, HackerInfo, HackerState, MalwareSavedProgress } from '../types';
 import { soundManager } from '../audio/soundManager';
 
 export interface GameEngineCallbacks {
@@ -15,6 +15,8 @@ export interface GameEngineCallbacks {
   onHackerWhacked?: (count: number) => void;
   onHackerStateChange?: (hackerInfo: HackerInfo | null) => void;
   onMalwareGameOver?: () => void;
+  onComboChange?: (combo: number, timeLeft: number, maxTime: number) => void;
+  onSpeedBoostChange?: (active: boolean, timeLeft: number, maxDuration: number) => void;
 }
 
 export class GameEngine {
@@ -35,6 +37,32 @@ export class GameEngine {
   public hackerWhackCount: number = 0;
   private hackLaserBeam: THREE.Line | null = null;
   private malwarePropagationTimer: number = 0; // Timer for LAN worm propagation if 1 PC is infected
+
+  // Combo & Speed Boost Skill System
+  public speedBoostTimer: number = 0;
+  public maxSpeedBoostDuration: number = 6.5;
+  public comboCount: number = 0;
+  public comboTimer: number = 0;
+  public maxComboTimer: number = 9.0;
+
+  // 3D Fire & Turbo Visual Effects
+  private fireLight: THREE.PointLight;
+  private fireAuraGroup: THREE.Group;
+  private fireAuraParticles: Array<{
+    mesh: THREE.Mesh;
+    baseY: number;
+    angle: number;
+    radius: number;
+    speed: number;
+    oscSpeed: number;
+  }> = [];
+  private fireTrailParticles: Array<{
+    mesh: THREE.Mesh;
+    life: number;
+    maxLife: number;
+    velY: number;
+  }> = [];
+  private fireTrailSpawnTimer: number = 0;
 
   private clock: THREE.Clock;
   private animFrameId: number | null = null;
@@ -93,6 +121,36 @@ export class GameEngine {
     this.character = new CharacterModel();
     this.character.group.position.copy(this.playerPos);
     this.scene.add(this.character.group);
+
+    // 6. 3D Fire Effects & Aura
+    this.fireLight = new THREE.PointLight(0xff5500, 0, 5.5);
+    this.fireLight.position.set(0, 1.2, 0);
+    this.character.group.add(this.fireLight);
+
+    this.fireAuraGroup = new THREE.Group();
+    this.fireAuraGroup.visible = false;
+    this.character.group.add(this.fireAuraGroup);
+
+    const flameColors = [0xff2200, 0xff5500, 0xff8800, 0xffbb00, 0xffea00];
+    for (let i = 0; i < 16; i++) {
+      const geo = new THREE.DodecahedronGeometry(0.06 + Math.random() * 0.04);
+      const mat = new THREE.MeshBasicMaterial({
+        color: flameColors[i % flameColors.length],
+        transparent: true,
+        opacity: 0.85,
+        blending: THREE.AdditiveBlending,
+      });
+      const mesh = new THREE.Mesh(geo, mat);
+      this.fireAuraGroup.add(mesh);
+      this.fireAuraParticles.push({
+        mesh,
+        baseY: Math.random() * 1.5,
+        angle: (i / 16) * Math.PI * 2,
+        radius: 0.35 + Math.random() * 0.25,
+        speed: 3.2 + Math.random() * 2.5,
+        oscSpeed: 4.5 + Math.random() * 4.0,
+      });
+    }
 
     // Event listeners
     this.setupInputs();
@@ -210,7 +268,63 @@ export class GameEngine {
     }
   }
 
+  public activateSpeedBoost(duration: number = 6.5) {
+    this.speedBoostTimer = duration;
+    this.character.isSpeedBoosted = true;
+    if (this.fireAuraGroup) {
+      this.fireAuraGroup.visible = true;
+    }
+    soundManager.playSpeedBoost();
+    if (this.callbacks.onSpeedBoostChange) {
+      this.callbacks.onSpeedBoostChange(true, this.speedBoostTimer, this.maxSpeedBoostDuration);
+    }
+  }
+
+  public deactivateSpeedBoost() {
+    this.speedBoostTimer = 0;
+    this.character.isSpeedBoosted = false;
+    if (this.fireAuraGroup) {
+      this.fireAuraGroup.visible = false;
+    }
+    if (this.fireLight) {
+      this.fireLight.intensity = 0;
+    }
+    if (this.callbacks.onSpeedBoostChange) {
+      this.callbacks.onSpeedBoostChange(false, 0, this.maxSpeedBoostDuration);
+    }
+  }
+
+  public incrementCombo(): number {
+    this.comboCount += 1;
+    this.comboTimer = this.maxComboTimer;
+    soundManager.playComboUp(this.comboCount);
+    if (this.callbacks.onComboChange) {
+      this.callbacks.onComboChange(this.comboCount, this.comboTimer, this.maxComboTimer);
+    }
+    return this.comboCount;
+  }
+
+  public resetCombo() {
+    this.comboCount = 0;
+    this.comboTimer = 0;
+    if (this.callbacks.onComboChange) {
+      this.callbacks.onComboChange(0, 0, this.maxComboTimer);
+    }
+  }
+
+  public saveComputerMalwareProgress(id: string, progress: MalwareSavedProgress) {
+    const compVis = this.office.computerVisuals.get(id);
+    if (compVis) {
+      compVis.data.malwareSavedProgress = progress;
+      this.notifyComputersChange();
+    }
+  }
+
   public markComputerRepaired(id: string) {
+    const compVis = this.office.computerVisuals.get(id);
+    if (compVis) {
+      compVis.data.malwareSavedProgress = undefined;
+    }
     this.office.setComputerStatus(id, 'normal');
     this.character.setAnimationState('success');
     setTimeout(() => {
@@ -218,6 +332,10 @@ export class GameEngine {
         this.character.setAnimationState('idle');
       }
     }, 1200);
+
+    // Reward player with Combo & Speed Boost Skill with Fire Effect!
+    this.incrementCombo();
+    this.activateSpeedBoost(6.5);
 
     this.notifyComputersChange();
 
@@ -229,6 +347,7 @@ export class GameEngine {
   }
 
   public markComputerFailed(id: string) {
+    this.resetCombo();
     this.character.setAnimationState('fail');
     setTimeout(() => {
       if (!this.isPaused) {
@@ -334,6 +453,9 @@ export class GameEngine {
     // Always update office animations (lights, sparks, screen indicators)
     this.office.update(delta);
 
+    // Update fire effects & speed boost skill
+    this.updateSpeedBoostAndFire(delta);
+
     // Update character animation frame
     this.character.update(delta);
 
@@ -343,6 +465,102 @@ export class GameEngine {
     // Render
     this.renderer.render(this.scene, this.camera);
   };
+
+  private updateSpeedBoostAndFire(delta: number) {
+    if (this.speedBoostTimer > 0) {
+      this.speedBoostTimer -= delta;
+
+      if (this.speedBoostTimer <= 0) {
+        // Boost has ended: cleanly reset state and shut off fire visuals
+        this.deactivateSpeedBoost();
+      } else {
+        // Boost is actively running
+        this.character.isSpeedBoosted = true;
+        this.fireAuraGroup.visible = true;
+
+        // Dynamic flickering fire light
+        const t = this.clock.getElapsedTime();
+        this.fireLight.intensity = 2.8 + Math.sin(t * 26) * 0.9 + (Math.random() - 0.5) * 0.5;
+        this.fireLight.color.setHex(Math.random() > 0.25 ? 0xff4500 : 0xffaa00);
+
+        // Animate aura flame embers
+        for (const p of this.fireAuraParticles) {
+          p.angle += p.speed * delta;
+          const currentY = (p.baseY + t * 1.6) % 1.5;
+          p.mesh.position.set(
+            Math.cos(p.angle) * p.radius,
+            currentY,
+            Math.sin(p.angle) * p.radius
+          );
+          const scale = 0.6 + Math.sin(t * p.oscSpeed) * 0.4;
+          p.mesh.scale.setScalar(scale);
+        }
+
+        if (this.callbacks.onSpeedBoostChange) {
+          this.callbacks.onSpeedBoostChange(true, this.speedBoostTimer, this.maxSpeedBoostDuration);
+        }
+      }
+    } else {
+      // Safety guard: guarantee visuals and character animation state are restored if timer is 0
+      if (this.character.isSpeedBoosted || this.fireAuraGroup.visible || this.fireLight.intensity > 0) {
+        this.deactivateSpeedBoost();
+      }
+    }
+
+    // Update fire trail embers
+    for (let i = this.fireTrailParticles.length - 1; i >= 0; i--) {
+      const p = this.fireTrailParticles[i];
+      p.life -= delta;
+      p.mesh.position.y += p.velY * delta;
+      const ratio = Math.max(0, p.life / p.maxLife);
+      p.mesh.scale.setScalar(ratio);
+      (p.mesh.material as THREE.MeshBasicMaterial).opacity = ratio * 0.9;
+      if (p.life <= 0) {
+        this.scene.remove(p.mesh);
+        p.mesh.geometry.dispose();
+        (p.mesh.material as THREE.Material).dispose();
+        this.fireTrailParticles.splice(i, 1);
+      }
+    }
+
+    // Combo countdown
+    if (this.comboCount > 0) {
+      this.comboTimer = Math.max(0, this.comboTimer - delta);
+      if (this.comboTimer <= 0) {
+        this.comboCount = 0;
+      }
+      if (this.callbacks.onComboChange) {
+        this.callbacks.onComboChange(this.comboCount, this.comboTimer, this.maxComboTimer);
+      }
+    }
+  }
+
+  private spawnFireTrailEmber() {
+    // Keep max 40 active trail embers to maintain 60 FPS
+    if (this.fireTrailParticles.length > 40) return;
+
+    const geo = new THREE.DodecahedronGeometry(0.08 + Math.random() * 0.05);
+    const colors = [0xff2200, 0xff5500, 0xff8800, 0xffcc00];
+    const mat = new THREE.MeshBasicMaterial({
+      color: colors[Math.floor(Math.random() * colors.length)],
+      transparent: true,
+      opacity: 0.9,
+      blending: THREE.AdditiveBlending,
+    });
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.position.set(
+      this.playerPos.x + (Math.random() - 0.5) * 0.35,
+      0.08 + Math.random() * 0.2,
+      this.playerPos.z + (Math.random() - 0.5) * 0.35
+    );
+    this.scene.add(mesh);
+    this.fireTrailParticles.push({
+      mesh,
+      life: 0.5 + Math.random() * 0.3,
+      maxLife: 0.8,
+      velY: 0.3 + Math.random() * 0.4,
+    });
+  }
 
   private updateMovement(delta: number) {
     let inputX = 0;
@@ -377,8 +595,9 @@ export class GameEngine {
       const targetAngle = Math.atan2(worldX, worldZ);
       this.character.updateFacing(targetAngle, delta, 16);
 
-      // Speed (5.5 units/sec - brisk agile technician pace)
-      const speed = 5.5 * Math.min(moveMag, 1.0);
+      // Speed (9.2 with Speed Boost skill vs 5.5 normal)
+      const baseSpeed = this.speedBoostTimer > 0 ? 9.2 : 5.5;
+      const speed = baseSpeed * Math.min(moveMag, 1.0);
       const moveStepX = worldX * speed * delta;
       const moveStepZ = worldZ * speed * delta;
 
@@ -408,11 +627,21 @@ export class GameEngine {
       this.character.group.position.copy(this.playerPos);
       this.character.setAnimationState('run');
 
-      // Footstep audio
+      // Footstep audio (faster cadence when speed boosted)
       this.footstepTimer += delta;
-      if (this.footstepTimer > 0.28) {
+      const stepInterval = this.speedBoostTimer > 0 ? 0.15 : 0.28;
+      if (this.footstepTimer > stepInterval) {
         soundManager.playFootstep();
         this.footstepTimer = 0;
+      }
+
+      // Fire trail when moving with speed boost
+      if (this.speedBoostTimer > 0) {
+        this.fireTrailSpawnTimer += delta;
+        if (this.fireTrailSpawnTimer > 0.05) {
+          this.fireTrailSpawnTimer = 0;
+          this.spawnFireTrailEmber();
+        }
       }
     } else {
       if (
