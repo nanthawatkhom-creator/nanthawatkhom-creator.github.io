@@ -14,6 +14,7 @@ export interface GameEngineCallbacks {
   onHackerAlert?: (message: string) => void;
   onHackerWhacked?: (count: number) => void;
   onHackerStateChange?: (hackerInfo: HackerInfo | null) => void;
+  onMalwareGameOver?: () => void;
 }
 
 export class GameEngine {
@@ -28,11 +29,12 @@ export class GameEngine {
   public hacker: HackerModel | null = null;
   private hackerPos: THREE.Vector3 = new THREE.Vector3(0, 0, 11);
   private hackerTargetPc: ComputerData | null = null;
-  private hackerSpawnCooldown: number = 16; // First hacker arrives in 16s
+  private hackerSpawnCooldown: number = 10; // First hacker arrives in 10s
   private hackerHackingTimer: number = 0;
   private hackerStunTimer: number = 0;
   public hackerWhackCount: number = 0;
   private hackLaserBeam: THREE.Line | null = null;
+  private malwarePropagationTimer: number = 0; // Timer for LAN worm propagation if 1 PC is infected
 
   private clock: THREE.Clock;
   private animFrameId: number | null = null;
@@ -261,6 +263,14 @@ export class GameEngine {
     return count;
   }
 
+  public getMalwareComputersCount(): number {
+    let count = 0;
+    this.office.computerVisuals.forEach((vis) => {
+      if (vis.data.status === 'malware') count++;
+    });
+    return count;
+  }
+
   public getAllComputers(): ComputerData[] {
     const list: ComputerData[] = [];
     this.office.computerVisuals.forEach((vis) => list.push(vis.data));
@@ -268,7 +278,12 @@ export class GameEngine {
   }
 
   private notifyComputersChange() {
-    this.callbacks.onComputersUpdate(this.getAllComputers());
+    const all = this.getAllComputers();
+    this.callbacks.onComputersUpdate(all);
+    const malwareCount = all.filter((c) => c.status === 'malware').length;
+    if (malwareCount >= 2 && this.callbacks.onMalwareGameOver) {
+      this.callbacks.onMalwareGameOver();
+    }
   }
 
   public start() {
@@ -462,21 +477,25 @@ export class GameEngine {
   }
 
   private spawnHacker() {
-    // Find normal computers to target
-    const normalComputers: ComputerData[] = [];
+    // Find computers to target (any computer not currently infected with malware)
+    const targetableComputers: ComputerData[] = [];
     this.office.computerVisuals.forEach((vis) => {
-      if (vis.data.status === 'normal') {
-        normalComputers.push(vis.data);
+      if (vis.data.status !== 'malware') {
+        targetableComputers.push(vis.data);
       }
     });
 
-    if (normalComputers.length === 0) {
-      this.hackerSpawnCooldown = 8;
+    if (targetableComputers.length === 0) {
+      this.hackerSpawnCooldown = 6;
       return;
     }
 
-    // Pick target PC
-    this.hackerTargetPc = normalComputers[Math.floor(Math.random() * normalComputers.length)];
+    // Pick target PC (prefer normal, but broken computers can be hacked too)
+    const normalCandidates = targetableComputers.filter((c) => c.status === 'normal');
+    this.hackerTargetPc =
+      normalCandidates.length > 0
+        ? normalCandidates[Math.floor(Math.random() * normalCandidates.length)]
+        : targetableComputers[Math.floor(Math.random() * targetableComputers.length)];
 
     // Instantiate Hacker Model
     this.hacker = new HackerModel();
@@ -487,8 +506,13 @@ export class GameEngine {
 
     soundManager.playHackerAlert();
 
+    const currentMalware = this.getMalwareComputersCount();
     if (this.callbacks.onHackerAlert) {
-      this.callbacks.onHackerAlert('⚠️ มี Hacker บุกเข้ามาในออฟฟิศ! ใช้ไม้ทุบด่วน [F]!');
+      if (currentMalware >= 1) {
+        this.callbacks.onHackerAlert('🚨 เตือนภัยระดับวิกฤต! Hacker บุกอีกแล้ว รีบฟาดไม้ [F] ก่อนเครื่องที่ 2 จะติดมัลแวร์แล้ว GAME OVER!');
+      } else {
+        this.callbacks.onHackerAlert('⚠️ มี Hacker บุกเข้ามาในออฟฟิศ! วิ่งไปใช้ไม้ทุบด่วน [F] หรือคลิกซ้าย!');
+      }
     }
   }
 
@@ -502,6 +526,36 @@ export class GameEngine {
   }
 
   private updateHacker(delta: number) {
+    const currentMalwareCount = this.getMalwareComputersCount();
+
+    // LAN Malware worm propagation if 1 computer is left infected
+    if (currentMalwareCount === 1) {
+      this.malwarePropagationTimer += delta;
+      if (this.malwarePropagationTimer >= 18 && this.malwarePropagationTimer < 26) {
+        const remainingSec = Math.max(1, Math.ceil(26 - this.malwarePropagationTimer));
+        if (Math.floor(this.malwarePropagationTimer * 2) % 2 === 0 && this.callbacks.onHackerAlert) {
+          this.callbacks.onHackerAlert(`🚨 มัลแวร์ในระบบกำลังลุกลามผ่าน LAN สู่เครื่องที่ 2 ใน ${remainingSec} วินาที! รีบไปกด [E] ล้างด่วน!`);
+        }
+      } else if (this.malwarePropagationTimer >= 26) {
+        // Infect a second computer via network spread
+        const cleanComputers: ComputerData[] = [];
+        this.office.computerVisuals.forEach((v) => {
+          if (v.data.status !== 'malware') {
+            cleanComputers.push(v.data);
+          }
+        });
+        if (cleanComputers.length > 0) {
+          const secondVictim = cleanComputers[Math.floor(Math.random() * cleanComputers.length)];
+          this.office.setComputerStatus(secondVictim.id, 'malware');
+          soundManager.playAlarm();
+          this.notifyComputersChange();
+        }
+        this.malwarePropagationTimer = 0;
+      }
+    } else {
+      this.malwarePropagationTimer = 0;
+    }
+
     if (!this.hacker) {
       this.hackerSpawnCooldown -= delta;
       if (this.hackerSpawnCooldown <= 0) {
@@ -517,7 +571,7 @@ export class GameEngine {
     const isNearPlayer = distToPlayer < 3.2;
 
     if (this.hacker.state === 'sneaking') {
-      if (!this.hackerTargetPc) {
+      if (!this.hackerTargetPc || this.hackerTargetPc.status === 'malware') {
         this.hacker.setHackerState('fleeing');
         return;
       }
@@ -532,22 +586,22 @@ export class GameEngine {
       const dist = toTarget.length();
 
       if (dist > 1.6) {
-        // Walk smoothly towards PC
+        // Walk smoothly towards PC with agile speed
         toTarget.normalize();
-        const sneakSpeed = 2.7; // m/s
+        const sneakSpeed = 3.0; // m/s
         this.hackerPos.add(toTarget.multiplyScalar(sneakSpeed * delta));
         this.hacker.group.position.copy(this.hackerPos);
 
         const targetAngle = Math.atan2(toTarget.x, toTarget.z);
-        this.hacker.updateFacing(targetAngle, delta, 10);
+        this.hacker.updateFacing(targetAngle, delta, 11);
       } else {
         // Arrived at PC: Start Hacking!
         this.hacker.setHackerState('hacking');
-        this.hackerHackingTimer = 8.5;
+        this.hackerHackingTimer = 7.0; // 7 seconds hack window for high tension
         soundManager.playHackerAlert();
 
         if (this.callbacks.onHackerAlert) {
-          this.callbacks.onHackerAlert(`🚨 แฮกเกอร์เริ่มแฮก [${this.hackerTargetPc.name}]! รีบวิ่งไปฟาดไม้ใส่!`);
+          this.callbacks.onHackerAlert(`🚨 แฮกเกอร์เริ่มแฮก [${this.hackerTargetPc.name}]! รีบวิ่งไปฟาดไม้ [F] ใส่ด่วน!`);
         }
 
         // Create cyber laser beam from hacker to PC monitor
@@ -565,13 +619,13 @@ export class GameEngine {
 
     } else if (this.hacker.state === 'hacking') {
       this.hackerHackingTimer -= delta;
-      const progress = Math.max(0, Math.min(100, (1 - this.hackerHackingTimer / 8.5) * 100));
+      const progress = Math.max(0, Math.min(100, (1 - this.hackerHackingTimer / 7.0) * 100));
       this.hacker.hackingProgress = progress;
 
       // Pulse cyber laser beam
       if (this.hackLaserBeam) {
         (this.hackLaserBeam.material as THREE.LineBasicMaterial).color.setHex(
-          Math.sin(this.hackerHackingTimer * 16) > 0 ? 0xef4444 : 0xa855f7
+          Math.sin(this.hackerHackingTimer * 18) > 0 ? 0xef4444 : 0xa855f7
         );
       }
 
@@ -617,7 +671,10 @@ export class GameEngine {
         this.scene.remove(this.hacker.group);
         this.removeLaserBeam();
         this.hacker = null;
-        this.hackerSpawnCooldown = 22 + Math.random() * 12; // Next invasion in 22-34s
+
+        // If there's already 1 malware computer active, the next hacker arrives faster (8-13s)
+        const activeMalware = this.getMalwareComputersCount();
+        this.hackerSpawnCooldown = activeMalware >= 1 ? 8 + Math.random() * 5 : 13 + Math.random() * 7;
         return;
       }
     }

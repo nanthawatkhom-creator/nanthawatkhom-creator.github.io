@@ -43,7 +43,7 @@ export const HowToPlayModal: React.FC<HowToPlayModalProps> = ({ onClose, isIniti
               1
             </div>
             <div>
-              <strong className="text-white">คอมเสียสายไฟชำรุด:</strong> หน้าจอกระพริบสีแดง มีประกายไฟ เข้าใกล้แล้วกด <strong className="text-amber-400 font-mono">[E]</strong> หมุนหัวต่อสายให้ตรงสีเพื่อกู้ระบบ
+              <strong className="text-white">คอมเสียสายไฟชำรุด:</strong> หน้าจอกระพริบสีแดง มีประกายไฟ เข้าใกล้แล้วกด <strong className="text-amber-400 font-mono">[E]</strong> <strong className="text-amber-300">คลิกลากสายไฟ (Drag & Drop)</strong> จากขั้วพอร์ตต้นทางฝั่งซ้ายไปเสียบเข้าช่องปลายทางสีเดียวกันฝั่งขวาให้ถูกต้องครบทุกสาย
             </div>
           </div>
 
@@ -65,12 +65,21 @@ export const HowToPlayModal: React.FC<HowToPlayModalProps> = ({ onClose, isIniti
             </div>
           </div>
 
-          <div className="flex items-start space-x-3 p-3 rounded-xl bg-blue-500/10 border border-blue-800/40">
-            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-blue-500/20 text-blue-400 font-bold">
+          <div className="flex items-start space-x-3 p-3 rounded-xl bg-rose-950/40 border border-rose-600/60 shadow-lg shadow-rose-950/40 animate-pulse">
+            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-rose-500/30 text-rose-300 font-black">
               4
             </div>
             <div>
-              <strong className="text-white">เวลา 3 นาที:</strong> ซ่อมคอมพิวเตอร์และป้องกันออฟฟิศให้ได้คะแนนสูงสุดก่อนหมดเวลา!
+              <strong className="text-rose-300">💀 กฎความยากระดับวิกฤต (Hardcore Game Over):</strong> หากในออฟฟิศมีคอมพิวเตอร์โดนไวรัสมัลแวร์ครบ <strong className="text-white underline">2 เครื่อง</strong> จะเกิด System Breach และ <strong className="text-rose-400">Game Over ทันที</strong>! อย่าปล่อยให้มัลแวร์ค้างในระบบนานจนแพร่กระจายผ่าน LAN
+            </div>
+          </div>
+
+          <div className="flex items-start space-x-3 p-3 rounded-xl bg-blue-500/10 border border-blue-800/40">
+            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-blue-500/20 text-blue-400 font-bold">
+              5
+            </div>
+            <div>
+              <strong className="text-white">เวลา 3 นาที:</strong> ซ่อมคอมพิวเตอร์ ปกป้องเครือข่าย และสะสมคะแนนให้ได้ระดับ S+ ก่อนหมดกะ!
             </div>
           </div>
         </div>

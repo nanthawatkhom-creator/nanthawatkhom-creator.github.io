@@ -17,14 +17,14 @@ export interface CableConnection {
   id: string;
   name: string;
   color: string;
-  startPin: number;
-  targetPin: number;
-  currentRotation: number;
-  requiredRotation: number;
+  label: string;
+  targetId: string;
+  connectedTargetId: string | null;
   isConnected: boolean;
 }
 
 export type GamePhase = 'intro' | 'playing' | 'minigame' | 'malware_battle' | 'gameover';
+export type GameOverReason = 'time' | 'malware';
 
 export interface GameStats {
   repairedCount: number;

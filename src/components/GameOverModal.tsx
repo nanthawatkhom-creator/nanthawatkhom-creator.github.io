@@ -1,9 +1,11 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { RotateCcw, Trophy, Award, CheckCircle, XCircle, Zap, ShieldCheck } from 'lucide-react';
+import { RotateCcw, Trophy, CheckCircle, XCircle, Zap, Skull, ShieldAlert, AlertOctagon } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { GameOverReason } from '../types';
 
 interface GameOverModalProps {
+  reason?: GameOverReason;
   repairedCount: number;
   failedCount: number;
   hackerWhackedCount?: number;
@@ -11,14 +13,17 @@ interface GameOverModalProps {
 }
 
 export const GameOverModal: React.FC<GameOverModalProps> = ({
+  reason = 'time',
   repairedCount,
   failedCount,
   hackerWhackedCount = 0,
   onRestart,
 }) => {
-  // Fire confetti on high score
+  const isMalwareBreach = reason === 'malware';
+
+  // Fire confetti on high score only if survived the shift and repaired well
   React.useEffect(() => {
-    if (repairedCount >= 5) {
+    if (!isMalwareBreach && repairedCount >= 5) {
       try {
         confetti({
           particleCount: 80,
@@ -29,14 +34,18 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
         // ignore
       }
     }
-  }, [repairedCount]);
+  }, [isMalwareBreach, repairedCount]);
 
   // Determine Grade and Title
   let grade = 'C';
   let title = 'ช่างไอทีฝึกหัด (Junior IT Intern)';
   let gradeColor = 'text-amber-400 border-amber-400 bg-amber-500/10';
 
-  if (repairedCount >= 12) {
+  if (isMalwareBreach) {
+    grade = '💀';
+    title = 'ระบบเครือข่ายออฟฟิศถูกมัลแวร์ยึดครอง (Network Breached)';
+    gradeColor = 'text-rose-400 border-rose-500 bg-rose-950/40 shadow-rose-900/50';
+  } else if (repairedCount >= 12) {
     grade = 'S+';
     title = 'ตำนานเทพกู้ชีพเซิร์ฟเวอร์ (Legendary Senior IT Architect)';
     gradeColor = 'text-purple-400 border-purple-400 bg-purple-500/10';
@@ -65,20 +74,48 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
       <motion.div
         initial={{ scale: 0.9, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
-        className="w-full max-w-lg rounded-3xl border border-slate-800 bg-slate-900 shadow-2xl p-6 md:p-8 text-slate-100"
+        className={`w-full max-w-lg rounded-3xl border shadow-2xl p-6 md:p-8 text-slate-100 ${
+          isMalwareBreach
+            ? 'border-rose-600/80 bg-slate-900 shadow-rose-950/60'
+            : 'border-slate-800 bg-slate-900 shadow-2xl'
+        }`}
       >
         {/* Header */}
         <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center p-3 rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/30 mb-3">
-            <Trophy className="w-8 h-8" />
-          </div>
-          <h2 className="text-3xl font-black tracking-tight text-white">
-            หมดเวลาปฏิบัติหน้าที่!
+          {isMalwareBreach ? (
+            <div className="inline-flex items-center justify-center p-3.5 rounded-2xl bg-rose-500/20 text-rose-400 border border-rose-500/40 mb-3 animate-pulse">
+              <Skull className="w-10 h-10 text-rose-500" />
+            </div>
+          ) : (
+            <div className="inline-flex items-center justify-center p-3 rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/30 mb-3">
+              <Trophy className="w-8 h-8" />
+            </div>
+          )}
+
+          <h2
+            className={`text-3xl font-black tracking-tight ${
+              isMalwareBreach ? 'text-rose-400' : 'text-white'
+            }`}
+          >
+            {isMalwareBreach ? '🚨 GAME OVER! เครือข่ายล่มสลาย' : 'หมดเวลาปฏิบัติหน้าที่!'}
           </h2>
           <p className="text-sm text-slate-400 mt-1">
-            สรุปรายงานผลงานช่างไอทีกู้ชีพคอมพิวเตอร์ในเวลา 3 นาที
+            {isMalwareBreach
+              ? 'คอมพิวเตอร์โดนไวรัสมัลแวร์ครบ 2 เครื่อง! ไฟร์วอลล์กลางถูกทำลาย'
+              : 'สรุปรายงานผลงานช่างไอทีกู้ชีพคอมพิวเตอร์ในเวลา 3 นาที'}
           </p>
         </div>
+
+        {/* Malware Warning Callout if Breached */}
+        {isMalwareBreach && (
+          <div className="rounded-2xl bg-rose-950/40 border border-rose-500/40 p-3.5 mb-5 flex items-start gap-3 text-xs text-rose-200">
+            <AlertOctagon className="w-5 h-5 text-rose-400 shrink-0 mt-0.5 animate-bounce" />
+            <div>
+              <div className="font-bold text-rose-300 mb-0.5">เงื่อนไขความยากขั้นสูง:</div>
+              เมื่อปล่อยให้มัลแวร์ระบาดครบ <strong className="text-white underline">2 เครื่อง</strong> ในออฟฟิศ ดาต้าเซ็นเตอร์จะตัดการเชื่อมต่อทันที! ต้องรีบใช้ไม้ [F] ฟาดแฮกเกอร์ หรือกด [E] ล้างมัลแวร์ก่อนเครื่องที่ 2 จะติดเชื้อ
+            </div>
+          </div>
+        )}
 
         {/* Grade Badge */}
         <div className="flex flex-col items-center justify-center p-5 rounded-2xl bg-slate-950/60 border border-slate-800 mb-6 text-center">
@@ -124,10 +161,14 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
         <button
           id="play-again-btn"
           onClick={onRestart}
-          className="w-full flex items-center justify-center gap-3 py-4 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-base shadow-lg shadow-blue-600/30 transition-all active:scale-98 cursor-pointer"
+          className={`w-full flex items-center justify-center gap-3 py-4 rounded-2xl text-white font-bold text-base shadow-lg transition-all active:scale-98 cursor-pointer ${
+            isMalwareBreach
+              ? 'bg-rose-600 hover:bg-rose-500 shadow-rose-600/30'
+              : 'bg-blue-600 hover:bg-blue-500 shadow-blue-600/30'
+          }`}
         >
           <RotateCcw className="w-5 h-5" />
-          <span>เริ่มกะใหม่ (เล่นอีกครั้ง)</span>
+          <span>{isMalwareBreach ? 'เริ่มใหม่ แก้มือรอบนี้!' : 'เริ่มกะใหม่ (เล่นอีกครั้ง)'}</span>
         </button>
       </motion.div>
     </div>

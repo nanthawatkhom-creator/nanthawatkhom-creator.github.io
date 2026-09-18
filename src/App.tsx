@@ -5,7 +5,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { GameEngine } from './game/GameEngine';
-import { ComputerData, GamePhase, HackerInfo } from './types';
+import { ComputerData, GamePhase, GameOverReason, HackerInfo } from './types';
 import { GameHUD } from './components/GameHUD';
 import { MiniGameModal } from './components/MiniGameModal';
 import { MalwareBattleModal } from './components/MalwareBattleModal';
@@ -21,10 +21,12 @@ export default function App() {
   const engineRef = useRef<GameEngine | null>(null);
 
   const [gamePhase, setGamePhase] = useState<GamePhase>('intro');
+  const [gameOverReason, setGameOverReason] = useState<GameOverReason>('time');
   const [timeRemaining, setTimeRemaining] = useState<number>(TOTAL_GAME_TIME);
   const [repairedCount, setRepairedCount] = useState<number>(0);
   const [failedCount, setFailedCount] = useState<number>(0);
   const [brokenCount, setBrokenCount] = useState<number>(2);
+  const [malwareCount, setMalwareCount] = useState<number>(0);
   const [hackerWhackedCount, setHackerWhackedCount] = useState<number>(0);
 
   const [nearComputer, setNearComputer] = useState<ComputerData | null>(null);
@@ -77,7 +79,17 @@ export default function App() {
         const broken = computers.filter(
           (c) => c.status === 'broken' || c.status === 'repairing' || c.status === 'malware'
         ).length;
+        const malwares = computers.filter((c) => c.status === 'malware').length;
         setBrokenCount(broken);
+        setMalwareCount(malwares);
+
+        // Immediate Game Over if 2 computers become infected with malware
+        if (malwares >= 2) {
+          handleGameOver('malware');
+        }
+      },
+      onMalwareGameOver: () => {
+        handleGameOver('malware');
       },
     });
 
@@ -98,7 +110,7 @@ export default function App() {
       setTimeRemaining((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
-          handleGameOver();
+          handleGameOver('time');
           return 0;
         }
         return prev - 1;
@@ -108,8 +120,14 @@ export default function App() {
     return () => clearInterval(timer);
   }, [gamePhase]);
 
-  const handleGameOver = () => {
+  const handleGameOver = (reason: GameOverReason = 'time') => {
+    setGameOverReason(reason);
     setGamePhase('gameover');
+    setActiveMiniGameComp(null);
+    setActiveMalwareComp(null);
+    if (reason === 'malware') {
+      soundManager.playSystemBreach();
+    }
     if (engineRef.current) {
       engineRef.current.setPaused(true);
     }
@@ -128,8 +146,11 @@ export default function App() {
     setRepairedCount(0);
     setFailedCount(0);
     setHackerWhackedCount(0);
+    setMalwareCount(0);
+    setGameOverReason('time');
     setActiveMiniGameComp(null);
     setActiveMalwareComp(null);
+    setHackerAlertMsg(null);
 
     if (engineRef.current) {
       // Repair all computers first, then break 2 fresh ones
@@ -141,6 +162,7 @@ export default function App() {
       engineRef.current.breakRandomComputer();
       engineRef.current.setPaused(false);
       setBrokenCount(engineRef.current.getBrokenComputersCount());
+      setMalwareCount(engineRef.current.getMalwareComputersCount());
     }
 
     setGamePhase('playing');
@@ -241,6 +263,7 @@ export default function App() {
           repairedCount={repairedCount}
           failedCount={failedCount}
           brokenCount={brokenCount}
+          malwareCount={malwareCount}
           hackerWhackedCount={hackerWhackedCount}
           hackerInfo={hackerInfo}
           hackerAlertMsg={hackerAlertMsg}
@@ -294,6 +317,7 @@ export default function App() {
       {/* Game Over Modal */}
       {gamePhase === 'gameover' && (
         <GameOverModal
+          reason={gameOverReason}
           repairedCount={repairedCount}
           failedCount={failedCount}
           hackerWhackedCount={hackerWhackedCount}

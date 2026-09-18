@@ -7,6 +7,7 @@ interface GameHUDProps {
   repairedCount: number;
   failedCount: number;
   brokenCount: number;
+  malwareCount?: number;
   hackerWhackedCount?: number;
   hackerInfo?: HackerInfo | null;
   hackerAlertMsg?: string | null;
@@ -26,6 +27,7 @@ export const GameHUD: React.FC<GameHUDProps> = ({
   repairedCount,
   failedCount,
   brokenCount,
+  malwareCount = 0,
   hackerWhackedCount = 0,
   hackerInfo,
   hackerAlertMsg,
@@ -49,8 +51,13 @@ export const GameHUD: React.FC<GameHUDProps> = ({
 
   return (
     <div className="pointer-events-none absolute inset-0 flex flex-col justify-between p-4 md:p-6 select-none">
+      {/* Red/Purple vignette emergency border when 1 computer is infected with malware */}
+      {malwareCount >= 1 && (
+        <div className="pointer-events-none fixed inset-0 ring-4 ring-inset ring-rose-500/60 shadow-[inset_0_0_80px_rgba(244,63,94,0.35)] animate-pulse z-20" />
+      )}
+
       {/* Top Header Row */}
-      <div className="flex items-start justify-between w-full gap-2">
+      <div className="relative z-30 flex items-start justify-between w-full gap-2">
         {/* Top Left: REPAIRED & HACKER STAT */}
         <div className="flex flex-col gap-2">
           <div
@@ -89,7 +96,7 @@ export const GameHUD: React.FC<GameHUDProps> = ({
           </div>
         </div>
 
-        {/* Top Center: TIME & ACTIVE ALERTS */}
+        {/* Top Center: TIME, MALWARE THREAT GAUGE & ACTIVE ALERTS */}
         <div className="flex flex-col items-center">
           <div
             id="hud-timer"
@@ -113,10 +120,46 @@ export const GameHUD: React.FC<GameHUDProps> = ({
             </div>
           </div>
 
-          {/* Active Broken / Malware Alerts Pill */}
-          <div className="mt-2 flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900/85 backdrop-blur-sm border border-red-500/40 text-xs text-red-400 shadow">
-            <AlertTriangle className="w-3.5 h-3.5 animate-bounce" />
-            <span>คอมมีปัญหา: <strong className="font-mono text-white">{brokenCount}</strong> เครื่อง</span>
+          {/* Hardcore Malware Threat Meter (Max 2 Allowed: 2 = GAME OVER) */}
+          <div
+            id="hud-malware-threat"
+            className={`mt-2 pointer-events-auto flex items-center gap-2 px-3.5 py-1.5 rounded-full border text-xs font-semibold shadow-lg transition-all ${
+              malwareCount >= 1
+                ? 'bg-rose-950/95 border-rose-500 text-rose-300 shadow-rose-900/60 animate-pulse'
+                : 'bg-slate-900/85 border-slate-700 text-slate-300'
+            }`}
+          >
+            <Skull
+              className={`w-4 h-4 ${
+                malwareCount >= 1 ? 'text-rose-400 animate-bounce' : 'text-slate-400'
+              }`}
+            />
+            <span>มัลแวร์ในระบบ:</span>
+            <div className="flex items-center gap-1 font-mono font-black">
+              <span
+                className={`px-1.5 py-0.5 rounded text-xs ${
+                  malwareCount >= 1 ? 'bg-rose-600 text-white' : 'bg-slate-800 text-slate-200'
+                }`}
+              >
+                {malwareCount}
+              </span>
+              <span className="text-slate-400">/ 2 เครื่อง</span>
+            </div>
+            {malwareCount === 1 ? (
+              <span className="text-[11px] text-rose-400 font-bold tracking-tight">
+                ⚠️ หากครบ 2 เครื่อง GAME OVER ทันที!
+              </span>
+            ) : (
+              <span className="text-[10px] text-emerald-400 font-medium">
+                (ปลอดภัย)
+              </span>
+            )}
+          </div>
+
+          {/* Active Broken / Hardware Issues Pill */}
+          <div className="mt-1.5 flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900/85 backdrop-blur-sm border border-amber-500/40 text-xs text-amber-400 shadow">
+            <AlertTriangle className="w-3.5 h-3.5" />
+            <span>คอมสายไฟหลุด: <strong className="font-mono text-white">{Math.max(0, brokenCount - malwareCount)}</strong> เครื่อง</span>
           </div>
         </div>
 
