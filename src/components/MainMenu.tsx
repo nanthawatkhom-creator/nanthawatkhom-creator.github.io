@@ -1,12 +1,11 @@
 import React, { useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Play, BookOpen, Map, Settings, Volume2, VolumeX, Shield, Terminal, Zap, Flame, Monitor, HardDrive, User } from 'lucide-react';
+import { Play, BookOpen, Settings, Volume2, VolumeX, Shield, Terminal, Zap, Flame, Monitor, HardDrive, User } from 'lucide-react';
 import { soundManager } from '../audio/soundManager';
 
 interface MainMenuProps {
   onStartGame: () => void;
   onOpenHowToPlay: () => void;
-  onOpenMap: () => void;
   onOpenSettings: () => void;
   isMuted: boolean;
   onToggleMute: () => void;
@@ -15,7 +14,6 @@ interface MainMenuProps {
 export const MainMenu: React.FC<MainMenuProps> = ({
   onStartGame,
   onOpenHowToPlay,
-  onOpenMap,
   onOpenSettings,
   isMuted,
   onToggleMute,
@@ -153,7 +151,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
           </button>
 
           {/* Secondary Actions Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 gap-2.5 max-w-md">
             {/* How To Play */}
             <button
               onClick={() => {
@@ -165,19 +163,6 @@ export const MainMenu: React.FC<MainMenuProps> = ({
             >
               <BookOpen className="w-4 h-4 text-cyan-400" />
               <span>วิธีเล่น & กฎ</span>
-            </button>
-
-            {/* Office Map */}
-            <button
-              onClick={() => {
-                soundManager.playUiClick();
-                onOpenMap();
-              }}
-              onMouseEnter={() => soundManager.playUiHover()}
-              className="flex items-center justify-center gap-2 py-3 px-3 rounded-xl border border-slate-700/80 bg-slate-900/80 hover:bg-slate-800 hover:border-slate-600 text-slate-200 font-semibold text-xs transition-colors cursor-pointer"
-            >
-              <Map className="w-4 h-4 text-indigo-400" />
-              <span>แผนผังออฟฟิศ</span>
             </button>
 
             {/* Settings */}
@@ -242,8 +227,6 @@ export const MainMenu: React.FC<MainMenuProps> = ({
           <span>INTERACT: [E]</span>
           <span>·</span>
           <span>BAT: [F]</span>
-          <span>·</span>
-          <span>PERSPECTIVE: [V]</span>
         </div>
         <div className="text-slate-400">
           PRESS <span className="text-cyan-400 font-bold">[ENTER]</span> OR <span className="text-cyan-400 font-bold">[SPACE]</span> TO START

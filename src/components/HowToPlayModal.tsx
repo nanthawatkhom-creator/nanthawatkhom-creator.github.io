@@ -184,10 +184,10 @@ export const HowToPlayModal: React.FC<HowToPlayModalProps> = ({ onClose, isIniti
               <div className="p-4 rounded-xl border border-purple-500/30 bg-purple-950/20 space-y-2">
                 <div className="font-semibold text-purple-300 flex items-center gap-2">
                   <Zap className="w-4 h-4 text-purple-400" />
-                  <span>Hacker บุกออฟฟิศ & ไม้ไอทีกำราบ [F]</span>
+                  <span>Hacker บุกออฟฟิศ & ฟาดโดนตัวแฮกเกอร์ [F]</span>
                 </div>
                 <p className="text-xs text-slate-300">
-                  แฮกเกอร์ใส่ฮู้ดดำจะแอบย่องเข้ามาเจาะระบบคอมพิวเตอร์ เมื่อได้ยินเสียงไซเรนเตือน รีบวิ่งเข้าไปแล้วกดปุ่ม <strong className="text-amber-400 font-mono">[F]</strong> หรือคลิกซ้าย เพื่อฟาดไม้ไอทีสกัดกั้นก่อนแฮกเกอร์จะปล่อยมัลแวร์สำเร็จ!
+                  แฮกเกอร์ใส่ฮู้ดดำจะแอบย่องเข้ามาเจาะระบบคอมพิวเตอร์ เมื่อได้ยินเสียงไซเรนเตือน รีบวิ่งเข้าไปประชิดตัวแล้วกดปุ่ม <strong className="text-amber-400 font-mono">[F]</strong> หรือคลิกซ้าย เพื่อฟาดไม้ไอทีกระแทกตัวแฮกเกอร์โดยตรง (ต้องประชิดและหวดโดนตัวแฮกเกอร์จริงๆ ไม่ใช่วงกว้าง) ก่อนที่แฮกเกอร์จะปล่อยมัลแวร์สำเร็จ!
                 </p>
               </div>
 
@@ -207,7 +207,7 @@ export const HowToPlayModal: React.FC<HowToPlayModalProps> = ({ onClose, isIniti
 
           {activeTab === 'controls' && (
             <div className="space-y-3">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
                 <div className="p-3 rounded-xl border border-slate-800 bg-slate-950/50">
                   <div className="font-semibold text-white mb-1">การเคลื่อนที่:</div>
                   <div className="text-slate-300 font-mono">W / A / S / D หรือ ลูกศร</div>
@@ -221,15 +221,9 @@ export const HowToPlayModal: React.FC<HowToPlayModalProps> = ({ onClose, isIniti
                 </div>
 
                 <div className="p-3 rounded-xl border border-slate-800 bg-slate-950/50">
-                  <div className="font-semibold text-white mb-1">ทุบแฮกเกอร์ด้วยไม้:</div>
+                  <div className="font-semibold text-white mb-1">ฟาดตัวแฮกเกอร์ด้วยไม้:</div>
                   <div className="text-amber-400 font-mono font-bold">[F] หรือ คลิกซ้าย</div>
-                  <div className="text-slate-400 text-[11px] mt-0.5">วิ่งเข้าใกล้แฮกเกอร์แล้วกด</div>
-                </div>
-
-                <div className="p-3 rounded-xl border border-slate-800 bg-slate-950/50">
-                  <div className="font-semibold text-white mb-1">สลับมุมมองกล้อง (1P/3P):</div>
-                  <div className="text-cyan-400 font-mono font-bold">[V] หรือ [C]</div>
-                  <div className="text-slate-400 text-[11px] mt-0.5">สลับบุคคลที่ 1 และ 3</div>
+                  <div className="text-slate-400 text-[11px] mt-0.5">วิ่งประชิดแล้วหวดให้โดนตัว</div>
                 </div>
               </div>
 

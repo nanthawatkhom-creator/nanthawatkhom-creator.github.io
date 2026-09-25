@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { CharacterModel } from './CharacterModel';
 import { OfficeScene } from './OfficeScene';
 import { HackerModel } from './HackerModel';
-import { CameraPerspective, ComputerData, HackerInfo, HackerState, MalwareSavedProgress } from '../types';
+import { ComputerData, HackerInfo, HackerState, MalwareSavedProgress } from '../types';
 import { soundManager } from '../audio/soundManager';
 
 export interface GameEngineCallbacks {
@@ -17,7 +17,6 @@ export interface GameEngineCallbacks {
   onMalwareGameOver?: () => void;
   onComboChange?: (combo: number, timeLeft: number, maxTime: number) => void;
   onSpeedBoostChange?: (active: boolean, timeLeft: number, maxDuration: number) => void;
-  onCameraPerspectiveChange?: (perspective: CameraPerspective) => void;
 }
 
 export class GameEngine {
@@ -39,11 +38,8 @@ export class GameEngine {
   private hackLaserBeam: THREE.Line | null = null;
   private malwarePropagationTimer: number = 0; // Timer for LAN worm propagation if 1 PC is infected
 
-  // Camera Perspective System (Third Person & First Person)
-  public cameraPerspective: CameraPerspective = 'third_person';
+  // Camera System (Third Person Follow Camera)
   public cameraAnglePitch: number = 0;
-  private fpsBatGroup: THREE.Group;
-  private fpsBatSwingTimer: number = 0;
 
   // Combo & Speed Boost Skill System
   public speedBoostTimer: number = 0;
@@ -117,33 +113,6 @@ export class GameEngine {
     this.camera = new THREE.PerspectiveCamera(45, aspect, 0.1, 100);
     this.camera.position.set(0, 9, 10);
     this.camera.lookAt(0, 1, 0);
-
-    // 2.5 First-Person View Bat attached to camera
-    this.fpsBatGroup = new THREE.Group();
-    this.fpsBatGroup.position.set(0.38, -0.32, -0.6); // bottom-right of FPS screen
-    this.fpsBatGroup.rotation.set(-0.2, 0.4, -0.3); // angled ready to strike
-
-    const fpsGripMat = new THREE.MeshStandardMaterial({ color: 0x18181b, roughness: 0.9 });
-    const fpsHandle = new THREE.Mesh(new THREE.CylinderGeometry(0.016, 0.018, 0.22, 10), fpsGripMat);
-    fpsHandle.position.y = -0.1;
-    this.fpsBatGroup.add(fpsHandle);
-
-    const fpsKnob = new THREE.Mesh(new THREE.CylinderGeometry(0.024, 0.022, 0.02, 10), fpsGripMat);
-    fpsKnob.position.y = -0.21;
-    this.fpsBatGroup.add(fpsKnob);
-
-    const fpsBarrelMat = new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.35, metalness: 0.15 });
-    const fpsBarrel = new THREE.Mesh(new THREE.CylinderGeometry(0.038, 0.02, 0.45, 12), fpsBarrelMat);
-    fpsBarrel.position.y = 0.22;
-    this.fpsBatGroup.add(fpsBarrel);
-
-    const fpsTipMat = new THREE.MeshBasicMaterial({ color: 0xf59e0b });
-    const fpsTip = new THREE.Mesh(new THREE.SphereGeometry(0.039, 10, 10), fpsTipMat);
-    fpsTip.position.y = 0.45;
-    this.fpsBatGroup.add(fpsTip);
-
-    this.fpsBatGroup.visible = false;
-    this.camera.add(this.fpsBatGroup);
     this.scene.add(this.camera);
 
     // 3. Renderer
@@ -221,15 +190,9 @@ export class GameEngine {
       // Normal non-inverted: Dragging right turns view right (+Yaw), dragging left turns view left (-Yaw)
       this.cameraAngleYaw += deltaX * 0.006 * yawMultiplier;
 
-      if (this.cameraPerspective === 'first_person') {
-        // Normal non-inverted: Dragging up looks up (+Pitch), dragging down looks down (-Pitch)
-        this.cameraAnglePitch -= deltaY * 0.005 * pitchMultiplier;
-        this.cameraAnglePitch = THREE.MathUtils.clamp(this.cameraAnglePitch, -1.1, 1.1);
-      } else {
-        // Third Person: allow natural vertical camera elevation
-        this.cameraAnglePitch -= deltaY * 0.004 * pitchMultiplier;
-        this.cameraAnglePitch = THREE.MathUtils.clamp(this.cameraAnglePitch, -0.35, 0.65);
-      }
+      // Third Person: allow natural vertical camera elevation
+      this.cameraAnglePitch -= deltaY * 0.004 * pitchMultiplier;
+      this.cameraAnglePitch = THREE.MathUtils.clamp(this.cameraAnglePitch, -0.35, 0.65);
       this.lastMouseX = e.clientX;
       this.lastMouseY = e.clientY;
     });
@@ -273,13 +236,8 @@ export class GameEngine {
         // Normal non-inverted: Swiping right turns view right, swiping left turns view left
         this.cameraAngleYaw += deltaX * 0.006 * yawMultiplier;
 
-        if (this.cameraPerspective === 'first_person') {
-          this.cameraAnglePitch -= deltaY * 0.005 * pitchMultiplier;
-          this.cameraAnglePitch = THREE.MathUtils.clamp(this.cameraAnglePitch, -1.1, 1.1);
-        } else {
-          this.cameraAnglePitch -= deltaY * 0.004 * pitchMultiplier;
-          this.cameraAnglePitch = THREE.MathUtils.clamp(this.cameraAnglePitch, -0.35, 0.65);
-        }
+        this.cameraAnglePitch -= deltaY * 0.004 * pitchMultiplier;
+        this.cameraAnglePitch = THREE.MathUtils.clamp(this.cameraAnglePitch, -0.35, 0.65);
         this.lastMouseX = e.touches[0].clientX;
         this.lastMouseY = e.touches[0].clientY;
       },
@@ -293,12 +251,6 @@ export class GameEngine {
 
   private handleKeyDown = (e: KeyboardEvent) => {
     this.keys[e.code] = true;
-
-    // Toggle Camera Perspective: KeyV or KeyC
-    if (e.code === 'KeyV' || e.code === 'KeyC') {
-      this.toggleCameraPerspective();
-      return;
-    }
 
     // Attack / Whack with Bat: KeyF or KeyQ
     if (e.code === 'KeyF' || e.code === 'KeyQ') {
@@ -328,29 +280,6 @@ export class GameEngine {
     window.addEventListener('resize', handleResize);
   }
 
-  public setCameraPerspective(perspective: CameraPerspective) {
-    this.cameraPerspective = perspective;
-    if (perspective === 'first_person') {
-      this.character.group.visible = false;
-      this.fpsBatGroup.visible = true;
-      this.cameraAnglePitch = 0;
-    } else {
-      this.character.group.visible = true;
-      this.fpsBatGroup.visible = false;
-      this.cameraAnglePitch = 0;
-    }
-    soundManager.playClick();
-    if (this.callbacks.onCameraPerspectiveChange) {
-      this.callbacks.onCameraPerspectiveChange(perspective);
-    }
-  }
-
-  public toggleCameraPerspective(): CameraPerspective {
-    const next = this.cameraPerspective === 'third_person' ? 'first_person' : 'third_person';
-    this.setCameraPerspective(next);
-    return next;
-  }
-
   public setInvertCamera(invertYaw: boolean, invertPitch: boolean = false) {
     this.invertCameraYaw = invertYaw;
     this.invertCameraPitch = invertPitch;
@@ -362,24 +291,119 @@ export class GameEngine {
     return this.invertCameraYaw;
   }
 
+  public checkHackerDirectHit(): boolean {
+    if (!this.hacker || this.hacker.state === 'stunned') return false;
+
+    // Horizontal distance between player and hacker centers
+    const dx = this.hackerPos.x - this.playerPos.x;
+    const dz = this.hackerPos.z - this.playerPos.z;
+    const horizDist = Math.sqrt(dx * dx + dz * dz);
+
+    // Physical melee bat strike reach:
+    // Player radius (0.45) + Hacker radius (0.35) + Bat reach (0.55) = ~1.35m
+    if (horizDist > 1.38) {
+      return false; // Beyond physical reach of the bat
+    }
+
+    // Third Person: Player must be facing towards the hacker within a ~65-degree frontal swing arc
+    const forwardX = Math.sin(this.character.currentYaw);
+    const forwardZ = Math.cos(this.character.currentYaw);
+    const normX = dx / (horizDist || 1);
+    const normZ = dz / (horizDist || 1);
+
+    const dot = forwardX * normX + forwardZ * normZ;
+    return dot >= 0.42; // Facing the hacker's body
+  }
+
+  private spawnImpactSparks(pos: THREE.Vector3) {
+    const sparkCount = 18;
+    const geo = new THREE.BufferGeometry();
+    const positions = new Float32Array(sparkCount * 3);
+    const velocities: THREE.Vector3[] = [];
+
+    for (let i = 0; i < sparkCount; i++) {
+      positions[i * 3] = pos.x;
+      positions[i * 3 + 1] = pos.y;
+      positions[i * 3 + 2] = pos.z;
+
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 1.8 + Math.random() * 3.2;
+      velocities.push(
+        new THREE.Vector3(
+          Math.cos(angle) * speed,
+          1.2 + Math.random() * 2.2,
+          Math.sin(angle) * speed
+        )
+      );
+    }
+    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    const mat = new THREE.PointsMaterial({
+      color: 0xfbbf24,
+      size: 0.1,
+      transparent: true,
+      opacity: 1,
+      blending: THREE.AdditiveBlending,
+    });
+    const pMesh = new THREE.Points(geo, mat);
+    this.scene.add(pMesh);
+
+    let life = 0.4;
+    const animateSparks = () => {
+      life -= 0.035;
+      const posAttr = pMesh.geometry.attributes.position as THREE.BufferAttribute;
+      const arr = posAttr.array as Float32Array;
+      for (let i = 0; i < sparkCount; i++) {
+        velocities[i].y -= 0.12; // Gravity
+        arr[i * 3] += velocities[i].x * 0.025;
+        arr[i * 3 + 1] += velocities[i].y * 0.025;
+        arr[i * 3 + 2] += velocities[i].z * 0.025;
+      }
+      posAttr.needsUpdate = true;
+      mat.opacity = Math.max(0, life / 0.4);
+
+      if (life > 0) {
+        requestAnimationFrame(animateSparks);
+      } else {
+        this.scene.remove(pMesh);
+        geo.dispose();
+        mat.dispose();
+      }
+    };
+    requestAnimationFrame(animateSparks);
+  }
+
   public triggerWhackBat() {
     if (this.isPaused) return;
     soundManager.playSwoosh();
-    this.fpsBatSwingTimer = 0.28;
     this.character.triggerAttack();
 
-    // Check hit on Hacker
-    if (this.hacker) {
-      const distToHacker = this.playerPos.distanceTo(this.hackerPos);
-      if (distToHacker < 2.8) {
-        // Hit successfully!
+    // Check direct melee hit on Hacker's body
+    if (this.hacker && this.hacker.state !== 'stunned') {
+      const isDirectHit = this.checkHackerDirectHit();
+      if (isDirectHit) {
+        // Direct body hit!
         soundManager.playBonk();
         this.hacker.setHackerState('stunned');
-        this.hackerStunTimer = 2.4;
+        this.hackerStunTimer = 2.5;
         this.hackerWhackCount++;
 
+        // Knockback physics: push hacker body backwards away from strike
+        const knockback = this.hackerPos.clone().sub(this.playerPos);
+        knockback.y = 0;
+        knockback.normalize().multiplyScalar(0.75);
+        this.hackerPos.add(knockback);
+        this.hackerPos.x = THREE.MathUtils.clamp(this.hackerPos.x, -11, 11);
+        this.hackerPos.z = THREE.MathUtils.clamp(this.hackerPos.z, -11, 11);
+        this.hacker.group.position.copy(this.hackerPos);
+
+        // Flash hacker model white/red
+        this.hacker.triggerDirectHit();
+
+        // Spawn impact particle sparks at torso point of contact
+        this.spawnImpactSparks(new THREE.Vector3(this.hackerPos.x, 1.15, this.hackerPos.z));
+
         // Spatial UI feedback popup
-        this.office.spawnFloatingPopup('💥 HACKER BONKED! +200 XP', this.hackerPos, '#f59e0b');
+        this.office.spawnFloatingPopup('💥 DIRECT HIT! โดนตัวแฮกเกอร์! +250 XP', this.hackerPos, '#f59e0b');
 
         // Remove laser beam if hacking
         this.removeLaserBeam();
@@ -389,7 +413,13 @@ export class GameEngine {
           this.callbacks.onHackerWhacked(this.hackerWhackCount);
         }
         if (this.callbacks.onHackerAlert) {
-          this.callbacks.onHackerAlert('💥 ฟาดแฮกเกอร์สำเร็จ! แฮกเกอร์มึนตึ้บกำลังหนี!');
+          this.callbacks.onHackerAlert('💥 ฟาดโดนตัวแฮกเกอร์เต็มๆ! แฮกเกอร์มึนตึ้บกำลังหนีเตลิด!');
+        }
+      } else {
+        // Swung but missed because not close enough to body or facing away
+        const dist = this.playerPos.distanceTo(this.hackerPos);
+        if (dist < 2.8) {
+          this.office.spawnFloatingPopup('💨 หวดวืด! ต้องประชิดตัวแฮกเกอร์', this.playerPos.clone().add(new THREE.Vector3(0, 1.5, 0)), '#94a3b8');
         }
       }
     }
@@ -908,9 +938,9 @@ export class GameEngine {
     const currentMalware = this.getMalwareComputersCount();
     if (this.callbacks.onHackerAlert) {
       if (currentMalware >= 1) {
-        this.callbacks.onHackerAlert('🚨 เตือนภัยระดับวิกฤต! Hacker บุกอีกแล้ว รีบฟาดไม้ [F] ก่อนเครื่องที่ 2 จะติดมัลแวร์แล้ว GAME OVER!');
+        this.callbacks.onHackerAlert('🚨 เตือนภัยระดับวิกฤต! Hacker บุกอีกแล้ว รีบวิ่งไปประชิดตัวแล้วฟาด [F] ก่อนเครื่องที่ 2 จะติดมัลแวร์!');
       } else {
-        this.callbacks.onHackerAlert('⚠️ มี Hacker บุกเข้ามาในออฟฟิศ! วิ่งไปใช้ไม้ทุบด่วน [F] หรือคลิกซ้าย!');
+        this.callbacks.onHackerAlert('⚠️ มี Hacker บุกเข้ามาในออฟฟิศ! วิ่งไปประชิดตัวแล้วฟาดไม้ [F] ใส่ตัวแฮกเกอร์!');
       }
     }
   }
@@ -973,8 +1003,8 @@ export class GameEngine {
       return;
     }
 
-    const distToPlayer = this.playerPos.distanceTo(this.hackerPos);
-    const isNearPlayer = distToPlayer < 2.8;
+    // Direct melee body strike contact check (No arbitrary circle ring!)
+    const isNearPlayer = this.checkHackerDirectHit();
     this.hacker.setNearPlayer(isNearPlayer);
 
     if (this.hacker.state === 'sneaking') {
@@ -1008,7 +1038,7 @@ export class GameEngine {
         soundManager.playHackerAlert();
 
         if (this.callbacks.onHackerAlert) {
-          this.callbacks.onHackerAlert(`🚨 แฮกเกอร์เริ่มแฮก [${this.hackerTargetPc.name}]! รีบวิ่งไปฟาดไม้ [F] ใส่ด่วน!`);
+          this.callbacks.onHackerAlert(`🚨 แฮกเกอร์เริ่มแฮก [${this.hackerTargetPc.name}]! รีบวิ่งไปประชิดตัวแล้วฟาดไม้ [F] ด่วน!`);
         }
 
         // Create cyber laser beam from hacker to PC monitor
@@ -1118,57 +1148,21 @@ export class GameEngine {
       return;
     }
 
-    if (this.cameraPerspective === 'first_person') {
-      // First Person: Camera placed at player's eye level (1.62m) with natural head bob
-      const isRunning = this.character.getAnimationState() === 'run';
-      const t = this.clock.getElapsedTime();
-      const bobFreq = this.speedBoostTimer > 0 ? 22 : 14;
-      const headBob = isRunning ? Math.sin(t * bobFreq) * 0.035 : Math.sin(t * 2) * 0.008;
+    // Third Person: Follow camera with smooth damping and natural vertical pitch
+    const pitchOffset = THREE.MathUtils.clamp(this.cameraAnglePitch, -0.35, 0.65);
+    const camDist = 8.5;
+    const camHeight = 7.8 + pitchOffset * 3.2;
 
-      const eyeX = this.playerPos.x;
-      const eyeY = this.playerPos.y + 1.62 + headBob;
-      const eyeZ = this.playerPos.z;
+    const targetCamX = this.playerPos.x - Math.sin(this.cameraAngleYaw) * camDist;
+    const targetCamZ = this.playerPos.z + Math.cos(this.cameraAngleYaw) * camDist;
+    const targetCamY = this.playerPos.y + camHeight;
 
-      this.camera.position.set(eyeX, eyeY, eyeZ);
+    this.camera.position.x = THREE.MathUtils.damp(this.camera.position.x, targetCamX, 6, delta);
+    this.camera.position.y = THREE.MathUtils.damp(this.camera.position.y, targetCamY, 6, delta);
+    this.camera.position.z = THREE.MathUtils.damp(this.camera.position.z, targetCamZ, 6, delta);
 
-      // Look direction derived from horizontal Yaw and vertical Pitch
-      const cosPitch = Math.cos(this.cameraAnglePitch);
-      const lookDist = 10;
-      const targetX = eyeX + Math.sin(this.cameraAngleYaw) * cosPitch * lookDist;
-      const targetY = eyeY + Math.sin(this.cameraAnglePitch) * lookDist;
-      const targetZ = eyeZ - Math.cos(this.cameraAngleYaw) * cosPitch * lookDist;
-
-      this.camera.lookAt(targetX, targetY, targetZ);
-
-      // Animate FPS Bat in First-Person View
-      if (this.fpsBatSwingTimer > 0) {
-        this.fpsBatSwingTimer -= delta;
-        const p = 1 - Math.max(0, this.fpsBatSwingTimer / 0.28);
-        const arc = Math.sin(p * Math.PI);
-        this.fpsBatGroup.position.set(0.38 - arc * 0.35, -0.32 + arc * 0.12, -0.6 - arc * 0.25);
-        this.fpsBatGroup.rotation.set(-0.2 + arc * 1.4, 0.4 - arc * 0.9, -0.3 - arc * 1.2);
-      } else {
-        const sway = isRunning ? Math.sin(t * bobFreq) * 0.02 : Math.sin(t * 2) * 0.005;
-        this.fpsBatGroup.position.set(0.38, -0.32 + sway, -0.6);
-        this.fpsBatGroup.rotation.set(-0.2 + sway * 0.5, 0.4, -0.3 + sway * 0.3);
-      }
-    } else {
-      // Third Person: Follow camera with smooth damping and natural vertical pitch
-      const pitchOffset = THREE.MathUtils.clamp(this.cameraAnglePitch, -0.35, 0.65);
-      const camDist = 8.5;
-      const camHeight = 7.8 + pitchOffset * 3.2;
-
-      const targetCamX = this.playerPos.x - Math.sin(this.cameraAngleYaw) * camDist;
-      const targetCamZ = this.playerPos.z + Math.cos(this.cameraAngleYaw) * camDist;
-      const targetCamY = this.playerPos.y + camHeight;
-
-      this.camera.position.x = THREE.MathUtils.damp(this.camera.position.x, targetCamX, 6, delta);
-      this.camera.position.y = THREE.MathUtils.damp(this.camera.position.y, targetCamY, 6, delta);
-      this.camera.position.z = THREE.MathUtils.damp(this.camera.position.z, targetCamZ, 6, delta);
-
-      // Look slightly above character's chest with slight pitch offset
-      const lookTarget = new THREE.Vector3(this.playerPos.x, 1.2 + pitchOffset * 0.4, this.playerPos.z);
-      this.camera.lookAt(lookTarget);
-    }
+    // Look slightly above character's chest with slight pitch offset
+    const lookTarget = new THREE.Vector3(this.playerPos.x, 1.2 + pitchOffset * 0.4, this.playerPos.z);
+    this.camera.lookAt(lookTarget);
   }
 }

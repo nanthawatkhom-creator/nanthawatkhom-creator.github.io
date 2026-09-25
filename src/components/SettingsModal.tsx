@@ -1,7 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { X, Volume2, VolumeX, Music, Eye, Compass, Settings, Check } from 'lucide-react';
-import { CameraPerspective } from '../types';
+import { X, Volume2, VolumeX, Music, Compass, Settings, Check } from 'lucide-react';
 import { soundManager } from '../audio/soundManager';
 
 interface SettingsModalProps {
@@ -9,8 +8,6 @@ interface SettingsModalProps {
   onToggleMute: () => void;
   isBgmActive: boolean;
   onToggleBgm: () => void;
-  cameraPerspective: CameraPerspective;
-  onToggleCameraPerspective: () => void;
   isInvertCamera: boolean;
   onToggleInvertCamera: () => void;
   onClose: () => void;
@@ -21,8 +18,6 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   onToggleMute,
   isBgmActive,
   onToggleBgm,
-  cameraPerspective,
-  onToggleCameraPerspective,
   isInvertCamera,
   onToggleInvertCamera,
   onClose,
@@ -118,28 +113,6 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               }`}
             >
               {isBgmActive ? 'เล่นดนตรี' : 'ปิดดนตรี'}
-            </button>
-          </div>
-
-          {/* Camera Perspective */}
-          <div className="flex items-center justify-between p-3.5 rounded-xl border border-slate-800 bg-slate-950/50">
-            <div className="flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-800 text-slate-300">
-                <Eye className="w-4 h-4 text-indigo-400" />
-              </div>
-              <div>
-                <div className="text-sm font-semibold text-white">มุมมองเริ่มต้น (Camera View)</div>
-                <div className="text-xs text-slate-400">สามารถกด [V] สลับระหว่างเล่นได้เสมอ</div>
-              </div>
-            </div>
-            <button
-              onClick={() => {
-                soundManager.playUiClick();
-                onToggleCameraPerspective();
-              }}
-              className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600/20 border border-indigo-500/40 text-indigo-300 hover:bg-indigo-600/30 transition-colors cursor-pointer"
-            >
-              {cameraPerspective === 'first_person' ? 'บุคคลที่ 1 (1P)' : 'บุคคลที่ 3 (3P)'}
             </button>
           </div>
 

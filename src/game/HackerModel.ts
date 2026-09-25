@@ -26,10 +26,14 @@ export class HackerModel {
   // Stun stars & status billboard
   private starsGroup: THREE.Group;
   private statusBillboard: THREE.Group;
-  private progressRingMat: THREE.MeshBasicMaterial;
-  private threatRing: THREE.Mesh;
-  private threatRingMat: THREE.MeshBasicMaterial;
+  private progressBarMesh: THREE.Mesh;
+  private targetReticle: THREE.Group;
   public isNearPlayer: boolean = false;
+
+  // Materials for direct hit flash
+  private hoodieMat: THREE.MeshStandardMaterial;
+  private visorMat: THREE.MeshBasicMaterial;
+  private hitFlashTimer: number = 0;
 
   // Animation state
   public state: HackerState = 'sneaking';
@@ -42,14 +46,14 @@ export class HackerModel {
     this.group = new THREE.Group();
 
     // Materials
-    const hoodieMat = new THREE.MeshStandardMaterial({
+    this.hoodieMat = new THREE.MeshStandardMaterial({
       color: 0x18181b, // Dark charcoal hoodie
       roughness: 0.8,
     });
     const insideHoodMat = new THREE.MeshBasicMaterial({
       color: 0x09090b,
     });
-    const visorMat = new THREE.MeshBasicMaterial({
+    this.visorMat = new THREE.MeshBasicMaterial({
       color: 0x22c55e, // Matrix Neon Green glowing visor
     });
     const pantsMat = new THREE.MeshStandardMaterial({
@@ -82,7 +86,7 @@ export class HackerModel {
 
     const torsoMesh = new THREE.Mesh(
       new THREE.BoxGeometry(0.38, 0.46, 0.24),
-      hoodieMat
+      this.hoodieMat
     );
     torsoMesh.position.y = 0.23;
     torsoMesh.castShadow = true;
@@ -91,7 +95,7 @@ export class HackerModel {
     // Hoodie pocket pouch
     const pocket = new THREE.Mesh(
       new THREE.BoxGeometry(0.28, 0.16, 0.06),
-      hoodieMat
+      this.hoodieMat
     );
     pocket.position.set(0, 0.14, 0.13);
     this.torso.add(pocket);
@@ -105,7 +109,7 @@ export class HackerModel {
     this.hoodieGroup = new THREE.Group();
     const hoodMesh = new THREE.Mesh(
       new THREE.SphereGeometry(0.18, 16, 16),
-      hoodieMat
+      this.hoodieMat
     );
     hoodMesh.position.set(0, 0.08, -0.02);
     hoodMesh.scale.set(1.05, 1.2, 1.15);
@@ -123,7 +127,7 @@ export class HackerModel {
     // Glowing Cyber Mask / Visor
     this.visorMesh = new THREE.Mesh(
       new THREE.BoxGeometry(0.16, 0.05, 0.02),
-      visorMat
+      this.visorMat
     );
     this.visorMesh.position.set(0, 0.07, 0.16);
     this.hoodieGroup.add(this.visorMesh);
@@ -138,7 +142,7 @@ export class HackerModel {
 
     const leftArmMesh = new THREE.Mesh(
       new THREE.CylinderGeometry(0.055, 0.05, 0.24, 8),
-      hoodieMat
+      this.hoodieMat
     );
     leftArmMesh.position.y = -0.12;
     leftArmMesh.castShadow = true;
@@ -150,7 +154,7 @@ export class HackerModel {
 
     const leftForeMesh = new THREE.Mesh(
       new THREE.CylinderGeometry(0.048, 0.042, 0.22, 8),
-      hoodieMat
+      this.hoodieMat
     );
     leftForeMesh.position.y = -0.11;
     this.leftForearm.add(leftForeMesh);
@@ -162,7 +166,7 @@ export class HackerModel {
 
     const rightArmMesh = new THREE.Mesh(
       new THREE.CylinderGeometry(0.055, 0.05, 0.24, 8),
-      hoodieMat
+      this.hoodieMat
     );
     rightArmMesh.position.y = -0.12;
     rightArmMesh.castShadow = true;
@@ -174,7 +178,7 @@ export class HackerModel {
 
     const rightForeMesh = new THREE.Mesh(
       new THREE.CylinderGeometry(0.048, 0.042, 0.22, 8),
-      hoodieMat
+      this.hoodieMat
     );
     rightForeMesh.position.y = -0.11;
     this.rightForearm.add(rightForeMesh);
@@ -286,46 +290,73 @@ export class HackerModel {
     }
     this.group.add(this.starsGroup);
 
-    // 7. Above-Head Floating Billboard Indicator
+    // 7. Above-Head Floating Billboard Indicator (Status & Hack Progress)
     this.statusBillboard = new THREE.Group();
     this.statusBillboard.position.set(0, 2.05, 0);
 
     const billboardBg = new THREE.Mesh(
-      new THREE.BoxGeometry(0.85, 0.28, 0.02),
-      new THREE.MeshBasicMaterial({ color: 0x09090b, transparent: true, opacity: 0.85 })
+      new THREE.BoxGeometry(0.85, 0.24, 0.02),
+      new THREE.MeshBasicMaterial({ color: 0x09090b, transparent: true, opacity: 0.9 })
     );
     this.statusBillboard.add(billboardBg);
 
-    this.progressRingMat = new THREE.MeshBasicMaterial({ color: 0xef4444 });
-    const progressBorder = new THREE.Mesh(
-      new THREE.RingGeometry(0.08, 0.12, 16),
-      this.progressRingMat
-    );
-    progressBorder.position.set(-0.28, 0, 0.02);
-    this.statusBillboard.add(progressBorder);
-
-    // Skull indicator mesh in billboard
-    const skullMesh = new THREE.Mesh(
-      new THREE.BoxGeometry(0.1, 0.1, 0.03),
+    // Hacker Skull Tag
+    const skullTag = new THREE.Mesh(
+      new THREE.BoxGeometry(0.12, 0.12, 0.03),
       new THREE.MeshBasicMaterial({ color: 0xa855f7 })
     );
-    skullMesh.position.set(-0.28, 0, 0.025);
-    this.statusBillboard.add(skullMesh);
+    skullTag.position.set(-0.28, 0, 0.02);
+    this.statusBillboard.add(skullTag);
+
+    // Hacking Progress Track
+    const progTrack = new THREE.Mesh(
+      new THREE.BoxGeometry(0.44, 0.06, 0.022),
+      new THREE.MeshBasicMaterial({ color: 0x27272a })
+    );
+    progTrack.position.set(0.08, 0, 0.02);
+    this.statusBillboard.add(progTrack);
+
+    this.progressBarMesh = new THREE.Mesh(
+      new THREE.BoxGeometry(0.42, 0.045, 0.025),
+      new THREE.MeshBasicMaterial({ color: 0xef4444 })
+    );
+    this.progressBarMesh.position.set(0.08, 0, 0.022);
+    this.progressBarMesh.scale.set(0.01, 1, 1);
+    this.statusBillboard.add(this.progressBarMesh);
 
     this.group.add(this.statusBillboard);
 
-    // 8. Spatial UI: Tactical Threat & Whack Strike Zone Ring on Floor (2.8m radius)
-    const ringGeo = new THREE.RingGeometry(2.4, 2.75, 32);
-    this.threatRingMat = new THREE.MeshBasicMaterial({
-      color: 0xef4444,
+    // 8. Direct Body Strike Reticle (Only visible when player is in direct melee contact range)
+    // NO floor circle ring! Instead, precision corner brackets around the hacker's chest
+    this.targetReticle = new THREE.Group();
+    this.targetReticle.position.set(0, 1.15, 0);
+    this.targetReticle.visible = false;
+
+    const bracketMat = new THREE.MeshBasicMaterial({
+      color: 0xf59e0b,
       transparent: true,
-      opacity: 0.35,
-      side: THREE.DoubleSide,
+      opacity: 0.9,
     });
-    this.threatRing = new THREE.Mesh(ringGeo, this.threatRingMat);
-    this.threatRing.rotation.x = -Math.PI / 2;
-    this.threatRing.position.y = 0.02;
-    this.group.add(this.threatRing);
+    // 4 angular corner markers framing the hacker's body
+    const corners = [
+      { x: -0.28, y: 0.28 },
+      { x: 0.28, y: 0.28 },
+      { x: -0.28, y: -0.28 },
+      { x: 0.28, y: -0.28 },
+    ];
+    corners.forEach((c) => {
+      // Horizontal tick
+      const hTick = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.02, 0.02), bracketMat);
+      hTick.position.set(c.x + (c.x > 0 ? -0.045 : 0.045), c.y, 0.16);
+      this.targetReticle.add(hTick);
+
+      // Vertical tick
+      const vTick = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.09, 0.02), bracketMat);
+      vTick.position.set(c.x, c.y + (c.y > 0 ? -0.045 : 0.045), 0.16);
+      this.targetReticle.add(vTick);
+    });
+
+    this.group.add(this.targetReticle);
   }
 
   public setHackerState(state: HackerState) {
@@ -342,6 +373,12 @@ export class HackerModel {
     this.isNearPlayer = near;
   }
 
+  public triggerDirectHit() {
+    this.hitFlashTimer = 0.22;
+    this.hoodieMat.color.setHex(0xffffff); // Direct impact white flash
+    this.visorMat.color.setHex(0xef4444);
+  }
+
   public updateFacing(targetYaw: number, delta: number, speed: number = 12) {
     this.targetYaw = targetYaw;
     let diff = this.targetYaw - this.currentYaw;
@@ -355,34 +392,42 @@ export class HackerModel {
     this.animTime += delta;
     const t = this.animTime;
 
-    // Animate Spatial Threat Ring
-    this.threatRing.rotation.z += delta * 1.5;
-    if (this.isNearPlayer) {
-      // In strike range! Flash amber/gold to signal "[F] WHACK!"
-      const pulse = 0.65 + Math.sin(t * 12) * 0.3;
-      this.threatRingMat.opacity = pulse;
-      this.threatRingMat.color.setHex(0xf59e0b); // Warning Gold
-    } else if (this.state === 'hacking') {
-      const pulse = 0.5 + Math.sin(t * 8) * 0.25;
-      this.threatRingMat.opacity = pulse;
-      this.threatRingMat.color.setHex(0xa855f7); // Cyber Purple
-    } else {
-      this.threatRingMat.opacity = 0.3;
-      this.threatRingMat.color.setHex(0xef4444); // Red stealth alert
+    // Handle Direct Impact White Flash
+    if (this.hitFlashTimer > 0) {
+      this.hitFlashTimer -= delta;
+      if (this.hitFlashTimer <= 0) {
+        this.hoodieMat.color.setHex(0x18181b); // Restore dark charcoal hoodie
+        this.visorMat.color.setHex(this.state === 'hacking' ? 0xef4444 : 0x22c55e);
+      }
     }
 
-    // Pulse visor color & laptop screen
-    if (this.state === 'hacking') {
-      const flash = Math.sin(t * 14) > 0;
-      this.visorMesh.material = new THREE.MeshBasicMaterial({
-        color: flash ? 0xef4444 : 0xa855f7,
-      });
-      this.laptopScreenMat.color.setHex(flash ? 0xef4444 : 0x22c55e);
+    // Direct Body Strike Reticle animation (Only when in melee strike contact range)
+    if (this.isNearPlayer && this.state !== 'stunned') {
+      this.targetReticle.visible = true;
+      const pulse = 1.0 + Math.sin(t * 12) * 0.08;
+      this.targetReticle.scale.set(pulse, pulse, 1);
     } else {
-      this.visorMesh.material = new THREE.MeshBasicMaterial({
-        color: 0x22c55e,
-      });
-      this.laptopScreenMat.color.setHex(0xa855f7);
+      this.targetReticle.visible = false;
+    }
+
+    // Update Hacking Progress Bar in overhead billboard
+    const normProg = Math.max(0.01, Math.min(1.0, this.hackingProgress / 100));
+    this.progressBarMesh.scale.x = normProg;
+    this.progressBarMesh.position.x = 0.08 - 0.21 * (1 - normProg);
+    (this.progressBarMesh.material as THREE.MeshBasicMaterial).color.setHex(
+      this.hackingProgress > 75 ? 0xef4444 : 0xa855f7
+    );
+
+    // Pulse visor color & laptop screen
+    if (this.hitFlashTimer <= 0) {
+      if (this.state === 'hacking') {
+        const flash = Math.sin(t * 14) > 0;
+        this.visorMat.color.setHex(flash ? 0xef4444 : 0xa855f7);
+        this.laptopScreenMat.color.setHex(flash ? 0xef4444 : 0x22c55e);
+      } else {
+        this.visorMat.color.setHex(0x22c55e);
+        this.laptopScreenMat.color.setHex(0xa855f7);
+      }
     }
 
     // Always rotate billboard to face camera or gently oscillate

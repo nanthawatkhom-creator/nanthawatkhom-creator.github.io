@@ -6,7 +6,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { GameEngine } from './game/GameEngine';
 import {
-  CameraPerspective,
   ComputerData,
   GamePhase,
   GameOverReason,
@@ -128,8 +127,6 @@ export default function App() {
   const [hackerInfo, setHackerInfo] = useState<HackerInfo | null>(null);
   const [hackerAlertMsg, setHackerAlertMsg] = useState<string | null>(null);
 
-  // Camera Perspective (Third Person vs First Person)
-  const [cameraPerspective, setCameraPerspective] = useState<CameraPerspective>('third_person');
   const [isInvertCamera, setIsInvertCamera] = useState<boolean>(false);
 
   // Modal dialog states
@@ -178,15 +175,6 @@ export default function App() {
       onSpeedBoostChange: (active, timeLeft) => {
         setIsSpeedBoosted(active);
         setSpeedBoostTimeLeft(timeLeft);
-      },
-      onCameraPerspectiveChange: (perspective) => {
-        setCameraPerspective(perspective);
-        setToastMessage(
-          perspective === 'first_person'
-            ? '🎥 สลับเป็นมุมมอง: บุคคลที่ 1 (First Person)'
-            : '🎥 สลับเป็นมุมมอง: บุคคลที่ 3 (Third Person)'
-        );
-        setTimeout(() => setToastMessage(null), 2500);
       },
       onComputerBrokenAlert: (comp) => {
         if (engineRef.current) {
@@ -514,12 +502,6 @@ export default function App() {
     }
   };
 
-  const handleToggleCameraPerspective = () => {
-    if (engineRef.current) {
-      engineRef.current.toggleCameraPerspective();
-    }
-  };
-
   const handleToggleInvertCamera = () => {
     if (engineRef.current) {
       const nextInvert = engineRef.current.toggleInvertCamera();
@@ -585,7 +567,6 @@ export default function App() {
         <MainMenu
           onStartGame={handleStartGame}
           onOpenHowToPlay={() => setShowHelpModal(true)}
-          onOpenMap={() => setShowMapModal(true)}
           onOpenSettings={() => setShowSettingsModal(true)}
           isMuted={isMuted}
           onToggleMute={handleToggleMute}
@@ -622,8 +603,6 @@ export default function App() {
           isSpeedBoosted={isSpeedBoosted}
           speedBoostTimeLeft={speedBoostTimeLeft}
           toastMessage={toastMessage}
-          cameraPerspective={cameraPerspective}
-          onToggleCameraPerspective={handleToggleCameraPerspective}
           isInvertCamera={isInvertCamera}
           onToggleInvertCamera={handleToggleInvertCamera}
           shiftObjectives={shiftObjectives}
@@ -638,8 +617,6 @@ export default function App() {
           onWhackBat={handleWhackBat}
           canInteract={Boolean(nearComputer && (nearComputer.status === 'broken' || nearComputer.status === 'malware'))}
           isHackerNear={Boolean(hackerInfo?.isNearPlayer)}
-          cameraPerspective={cameraPerspective}
-          onToggleCamera={handleToggleCameraPerspective}
         />
       )}
 
@@ -725,8 +702,6 @@ export default function App() {
           onToggleMute={handleToggleMute}
           isBgmActive={isBgmActive}
           onToggleBgm={handleToggleBgm}
-          cameraPerspective={cameraPerspective}
-          onToggleCameraPerspective={handleToggleCameraPerspective}
           isInvertCamera={isInvertCamera}
           onToggleInvertCamera={handleToggleInvertCamera}
           onClose={() => setShowSettingsModal(false)}

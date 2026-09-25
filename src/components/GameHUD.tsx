@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CameraPerspective, ComputerData, HackerInfo, RadioDispatch, ShiftObjective } from '../types';
+import { ComputerData, HackerInfo, RadioDispatch, ShiftObjective } from '../types';
 import {
   Wrench,
   Volume2,
@@ -15,7 +15,6 @@ import {
   Flame,
   Save,
   Play,
-  Eye,
   Compass,
   Pause,
   Info,
@@ -55,8 +54,6 @@ interface GameHUDProps {
   isSpeedBoosted?: boolean;
   speedBoostTimeLeft?: number;
   toastMessage?: string | null;
-  cameraPerspective?: CameraPerspective;
-  onToggleCameraPerspective?: () => void;
   isInvertCamera?: boolean;
   onToggleInvertCamera?: () => void;
   shiftObjectives?: ShiftObjective[];
@@ -90,8 +87,6 @@ export const GameHUD: React.FC<GameHUDProps> = ({
   isSpeedBoosted = false,
   speedBoostTimeLeft = 0,
   toastMessage,
-  cameraPerspective = 'third_person',
-  onToggleCameraPerspective,
   isInvertCamera = false,
   onToggleInvertCamera,
   shiftObjectives = [],
@@ -120,17 +115,6 @@ export const GameHUD: React.FC<GameHUDProps> = ({
       {/* Speed Boost Fire Aura Screen Vignette */}
       {isSpeedBoosted && speedBoostTimeLeft > 0 && (
         <div className="pointer-events-none fixed inset-0 ring-4 ring-inset ring-amber-500/70 shadow-[inset_0_0_80px_rgba(245,158,11,0.3)] animate-pulse z-20" />
-      )}
-
-      {/* First Person Crosshair Reticle */}
-      {cameraPerspective === 'first_person' && (
-        <div className="pointer-events-none fixed inset-0 flex items-center justify-center z-10">
-          <div className="relative flex items-center justify-center w-6 h-6">
-            <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full opacity-90 shadow-[0_0_8px_rgba(34,211,238,0.9)]" />
-            <div className="absolute w-4 h-px bg-cyan-400/40" />
-            <div className="absolute h-4 w-px bg-cyan-400/40" />
-          </div>
-        </div>
       )}
 
       {/* Toast Notification */}
@@ -300,28 +284,6 @@ export const GameHUD: React.FC<GameHUDProps> = ({
               <MapPin className="w-3.5 h-3.5 text-cyan-400" />
               <span className="hidden md:inline">แท็บเล็ต</span>
               <span className="font-mono text-[10px] opacity-70">[M]</span>
-            </button>
-          )}
-
-          {/* Camera View Switcher */}
-          {onToggleCameraPerspective && (
-            <button
-              onClick={() => {
-                soundManager.playUiClick();
-                onToggleCameraPerspective();
-              }}
-              className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-colors cursor-pointer ${
-                cameraPerspective === 'first_person'
-                  ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300'
-                  : 'bg-slate-900 border-slate-700 text-slate-300 hover:text-white hover:bg-slate-800'
-              }`}
-              title="สลับมุมมองบุคคลที่ 1 / บุคคลที่ 3 (คีย์ลัด [V] หรือ [C])"
-            >
-              <Eye className="w-3.5 h-3.5" />
-              <span className="hidden md:inline">
-                {cameraPerspective === 'first_person' ? '1P' : '3P'}
-              </span>
-              <span className="font-mono text-[10px] opacity-70">[V]</span>
             </button>
           )}
 
@@ -496,9 +458,13 @@ export const GameHUD: React.FC<GameHUDProps> = ({
                   soundManager.playUiClick();
                   onWhackBat();
                 }}
-                className="px-2.5 py-1 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs cursor-pointer active:scale-95"
+                className={`px-3 py-1.5 rounded-lg font-bold text-xs cursor-pointer active:scale-95 transition-all shadow-md ${
+                  hackerInfo?.isNearPlayer
+                    ? 'bg-red-500 hover:bg-red-400 text-white animate-pulse shadow-red-500/50 scale-105 ring-2 ring-white/50'
+                    : 'bg-amber-500 hover:bg-amber-400 text-slate-950'
+                }`}
               >
-                ฟาดไม้ [F]
+                {hackerInfo?.isNearPlayer ? '💥 ตีตัว [F]!' : 'ฟาดไม้ [F]'}
               </button>
             )}
           </div>
@@ -584,10 +550,6 @@ export const GameHUD: React.FC<GameHUDProps> = ({
             <span>·</span>
             <span>
               <strong className="text-amber-400">[F] / คลิกซ้าย</strong> ทุบแฮกเกอร์
-            </span>
-            <span>·</span>
-            <span>
-              <strong className="text-cyan-400">[V]</strong> สลับมุมมอง 1P/3P
             </span>
             <span>·</span>
             <span>

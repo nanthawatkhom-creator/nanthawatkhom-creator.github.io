@@ -66,8 +66,6 @@ export interface HackerInfo {
   isNearPlayer: boolean;
 }
 
-export type CameraPerspective = 'third_person' | 'first_person';
-
 export interface RadioDispatch {
   id: string;
   senderName: string;
