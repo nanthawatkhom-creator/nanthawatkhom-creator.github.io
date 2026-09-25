@@ -1,13 +1,192 @@
 import * as THREE from 'three';
 import { ComputerData } from '../types';
 
+export interface FloatingPopup3D {
+  sprite: THREE.Sprite;
+  velocity: THREE.Vector3;
+  life: number;
+  maxLife: number;
+}
+
 export interface ComputerVisual {
   data: ComputerData;
   group: THREE.Group;
   screenMesh: THREE.Mesh;
   alertIconGroup: THREE.Group;
   smokeParticles: THREE.Points;
+  floorHoloRing: THREE.Mesh;
+  holoRingMat: THREE.MeshBasicMaterial;
   originalPos: THREE.Vector3;
+}
+
+// =========================================================================
+// DIEGETIC CANVAS TEXTURES (Realistic In-World Screen Visuals)
+// =========================================================================
+function createNormalScreenTexture(): THREE.CanvasTexture {
+  const canvas = document.createElement('canvas');
+  canvas.width = 512;
+  canvas.height = 300;
+  const ctx = canvas.getContext('2d')!;
+
+  const grad = ctx.createLinearGradient(0, 0, 512, 300);
+  grad.addColorStop(0, '#090d16');
+  grad.addColorStop(0.5, '#0f172a');
+  grad.addColorStop(1, '#0369a1');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, 512, 300);
+
+  // Grid
+  ctx.strokeStyle = 'rgba(56, 189, 248, 0.08)';
+  ctx.lineWidth = 1;
+  for (let x = 0; x < 512; x += 32) {
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, 300);
+    ctx.stroke();
+  }
+
+  // Taskbar
+  ctx.fillStyle = '#020617';
+  ctx.fillRect(0, 262, 512, 38);
+  ctx.fillStyle = '#38bdf8';
+  ctx.fillRect(14, 270, 20, 20);
+  ctx.fillStyle = '#f59e0b';
+  ctx.fillRect(40, 270, 20, 20);
+  ctx.fillStyle = '#10b981';
+  ctx.fillRect(66, 270, 20, 20);
+
+  ctx.fillStyle = '#94a3b8';
+  ctx.font = 'bold 13px monospace';
+  ctx.textAlign = 'right';
+  ctx.fillText('14:35 PM · ONLINE', 500, 285);
+
+  // Corporate Center Card
+  ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+  ctx.beginPath();
+  ctx.roundRect(100, 60, 312, 140, 14);
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(56, 189, 248, 0.4)';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  ctx.fillStyle = '#38bdf8';
+  ctx.font = 'bold 18px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('🏢 CORP WORKSTATION', 256, 105);
+
+  ctx.fillStyle = '#4ade80';
+  ctx.font = 'bold 15px monospace';
+  ctx.fillText('● SYSTEM STATUS: NORMAL', 256, 140);
+
+  ctx.fillStyle = '#94a3b8';
+  ctx.font = '12px monospace';
+  ctx.fillText('LAN GIGABIT: CONNECTED (SECURED)', 256, 168);
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.minFilter = THREE.LinearFilter;
+  return texture;
+}
+
+function createBsodScreenTexture(): THREE.CanvasTexture {
+  const canvas = document.createElement('canvas');
+  canvas.width = 512;
+  canvas.height = 300;
+  const ctx = canvas.getContext('2d')!;
+
+  // BSOD Azure Blue
+  ctx.fillStyle = '#0078d7';
+  ctx.fillRect(0, 0, 512, 300);
+
+  // Sad Face
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 54px sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText(':(', 36, 75);
+
+  // Error Text
+  ctx.font = 'bold 15px sans-serif';
+  ctx.fillText('Your PC ran into a problem and needs to restart.', 36, 118);
+  ctx.font = '13px sans-serif';
+  ctx.fillText("We're just collecting some error info for IT support.", 36, 140);
+
+  // Mock QR box
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(36, 165, 75, 75);
+  ctx.fillStyle = '#0078d7';
+  ctx.fillRect(42, 171, 63, 63);
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(48, 177, 20, 20);
+  ctx.fillRect(78, 177, 20, 20);
+  ctx.fillRect(48, 207, 20, 20);
+
+  // Diagnostic Stop code
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '12px sans-serif';
+  ctx.fillText('Call IT Support Desk or press [E] to reconnect', 125, 185);
+  ctx.font = 'bold 12px monospace';
+  ctx.fillText('Stop code: HARDWARE_CABLE_DISCONNECT', 125, 210);
+  ctx.fillText('Module: POWER_ETHERNET_FAULT', 125, 230);
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.minFilter = THREE.LinearFilter;
+  return texture;
+}
+
+function createMalwareScreenTexture(): THREE.CanvasTexture {
+  const canvas = document.createElement('canvas');
+  canvas.width = 512;
+  canvas.height = 300;
+  const ctx = canvas.getContext('2d')!;
+
+  // Blood Crimson / Obsidian Dark
+  ctx.fillStyle = '#150303';
+  ctx.fillRect(0, 0, 512, 300);
+
+  // Red Border
+  ctx.strokeStyle = '#ef4444';
+  ctx.lineWidth = 6;
+  ctx.strokeRect(3, 3, 506, 294);
+
+  // Header Banner
+  ctx.fillStyle = '#b91c1c';
+  ctx.fillRect(6, 6, 500, 42);
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 17px monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText('☠️ RANSOMWARE ALERT: SYSTEM LOCKED ☠️', 256, 34);
+
+  // Main warning
+  ctx.fillStyle = '#f87171';
+  ctx.font = 'bold 20px monospace';
+  ctx.fillText('ALL CORPORATE DATA HAS BEEN ENCRYPTED!', 256, 95);
+
+  ctx.fillStyle = '#cbd5e1';
+  ctx.font = '12px monospace';
+  ctx.fillText('Trojan.Agent.CryptoLock has seized control.', 256, 125);
+  ctx.fillText('0.5 BTC ransom demanded to release master key.', 256, 145);
+
+  // Countdown box
+  ctx.fillStyle = '#260808';
+  ctx.fillRect(110, 168, 292, 54);
+  ctx.strokeStyle = '#ef4444';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(110, 168, 292, 54);
+
+  ctx.fillStyle = '#fca5a5';
+  ctx.font = '10px monospace';
+  ctx.fillText('TIME REMAINING UNTIL PERMANENT KEY DELETION', 256, 187);
+  ctx.fillStyle = '#ef4444';
+  ctx.font = 'bold 22px monospace';
+  ctx.fillText('23:59:18', 256, 212);
+
+  // IT hero command
+  ctx.fillStyle = '#facc15';
+  ctx.font = 'bold 13px sans-serif';
+  ctx.fillText('PRESS [E] TO OVERRIDE & ENTER FIREWALL PURGE', 256, 260);
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.minFilter = THREE.LinearFilter;
+  return texture;
 }
 
 export class OfficeScene {
@@ -16,34 +195,41 @@ export class OfficeScene {
   public colliders: THREE.Box3[] = [];
   public officeBounds = { minX: -16, maxX: 16, minZ: -14, maxZ: 14 };
 
-  // Materials cache
+  // Screen Materials cache with high-fidelity canvas textures
   private matNormalScreen: THREE.MeshStandardMaterial;
   private matBrokenScreen: THREE.MeshStandardMaterial;
   private matMalwareScreen: THREE.MeshStandardMaterial;
   private serverLeds: THREE.MeshBasicMaterial[] = [];
   private alertTime: number = 0;
 
+  // Server Room Large Diegetic Display Board
+  private serverBoardMesh!: THREE.Mesh;
+  private serverBoardCanvas!: HTMLCanvasElement;
+  private serverBoardTexture!: THREE.CanvasTexture;
+
+  // 3D Kinetic Floating Popups
+  private floatingPopups: FloatingPopup3D[] = [];
+
   constructor(scene: THREE.Scene) {
     this.scene = scene;
 
     this.matNormalScreen = new THREE.MeshStandardMaterial({
-      color: 0x1e3a8a,
-      emissive: 0x38bdf8,
-      emissiveIntensity: 0.6,
-      roughness: 0.2,
+      map: createNormalScreenTexture(),
+      roughness: 0.15,
+      metalness: 0.05,
     });
 
     this.matBrokenScreen = new THREE.MeshStandardMaterial({
-      color: 0x7f1d1d,
-      emissive: 0xef4444,
-      emissiveIntensity: 1.5,
+      map: createBsodScreenTexture(),
+      emissive: 0x0078d7,
+      emissiveIntensity: 0.4,
       roughness: 0.2,
     });
 
     this.matMalwareScreen = new THREE.MeshStandardMaterial({
-      color: 0x581c87,
-      emissive: 0xa855f7,
-      emissiveIntensity: 2.0,
+      map: createMalwareScreenTexture(),
+      emissive: 0xef4444,
+      emissiveIntensity: 0.8,
       roughness: 0.2,
     });
 
@@ -345,6 +531,19 @@ export class OfficeScene {
 
       deskGroup.add(chairGroup);
 
+      // Spatial UI: Floor Holographic Projection Ring
+      const ringGeo = new THREE.RingGeometry(0.85, 1.35, 32);
+      const holoRingMat = new THREE.MeshBasicMaterial({
+        color: 0x38bdf8,
+        transparent: true,
+        opacity: 0.2,
+        side: THREE.DoubleSide,
+      });
+      const floorHoloRing = new THREE.Mesh(ringGeo, holoRingMat);
+      floorHoloRing.rotation.x = -Math.PI / 2;
+      floorHoloRing.position.set(0, 0.015, 0);
+      deskGroup.add(floorHoloRing);
+
       // 3D Floating Alert Indicator above broken computer
       const alertIconGroup = new THREE.Group();
       alertIconGroup.position.set(0, 1.85, -0.2);
@@ -423,6 +622,8 @@ export class OfficeScene {
         screenMesh,
         alertIconGroup,
         smokeParticles,
+        floorHoloRing,
+        holoRingMat,
         originalPos: new THREE.Vector3(cfg.pos[0], cfg.pos[1], cfg.pos[2]),
       });
     });
@@ -494,13 +695,33 @@ export class OfficeScene {
     shelfCollider.setFromCenterAndSize(new THREE.Vector3(-13.5, 1.2, 0), new THREE.Vector3(1.2, 2.4, 3.4));
     this.colliders.push(shelfCollider);
 
-    // IT Signboard "คลังอุปกรณ์และห้องเซิร์ฟเวอร์ IT"
-    const signBoard = new THREE.Mesh(
-      new THREE.BoxGeometry(0.1, 0.6, 2.8),
-      new THREE.MeshStandardMaterial({ color: 0x2563eb })
+    // Diegetic Wall-Mounted Corporate Network Operations Display (Big Board)
+    this.serverBoardCanvas = document.createElement('canvas');
+    this.serverBoardCanvas.width = 1024;
+    this.serverBoardCanvas.height = 512;
+    this.serverBoardTexture = new THREE.CanvasTexture(this.serverBoardCanvas);
+    this.renderServerBoardCanvas(100, 0, 0);
+
+    const boardFrame = new THREE.Mesh(
+      new THREE.BoxGeometry(0.12, 1.6, 3.4),
+      new THREE.MeshStandardMaterial({ color: 0x090d16, metalness: 0.8, roughness: 0.2 })
     );
-    signBoard.position.set(-7, 3.6, 0);
-    this.scene.add(signBoard);
+    boardFrame.position.set(-6.85, 3.3, 0);
+    this.scene.add(boardFrame);
+
+    const boardScreen = new THREE.Mesh(
+      new THREE.PlaneGeometry(3.3, 1.5),
+      new THREE.MeshStandardMaterial({
+        map: this.serverBoardTexture,
+        roughness: 0.1,
+        emissive: 0x0284c7,
+        emissiveIntensity: 0.25,
+      })
+    );
+    boardScreen.position.set(-6.78, 3.3, 0);
+    boardScreen.rotation.y = Math.PI / 2; // Face East into main office hallway
+    this.scene.add(boardScreen);
+    this.serverBoardMesh = boardScreen;
   }
 
   private buildOfficeProps() {
@@ -578,6 +799,163 @@ export class OfficeScene {
     });
   }
 
+  public renderServerBoardCanvas(integrity: number = 100, brokenCount: number = 0, malwareCount: number = 0) {
+    if (!this.serverBoardCanvas) return;
+    const ctx = this.serverBoardCanvas.getContext('2d')!;
+
+    // Background
+    ctx.fillStyle = '#020617';
+    ctx.fillRect(0, 0, 1024, 512);
+
+    // Tech frame
+    ctx.strokeStyle = '#0284c7';
+    ctx.lineWidth = 6;
+    ctx.strokeRect(6, 6, 1012, 500);
+
+    // Header
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(12, 12, 1000, 70);
+    ctx.fillStyle = '#38bdf8';
+    ctx.font = 'bold 28px monospace';
+    ctx.textAlign = 'left';
+    ctx.fillText('🏢 HQ IT NETWORK OPERATIONS CENTER (NOC)', 35, 55);
+
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '16px monospace';
+    ctx.textAlign = 'right';
+    ctx.fillText('SYSVER: v4.8.2 · LEVEL 14 HUB', 985, 55);
+
+    // Network Integrity Section
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 22px monospace';
+    ctx.textAlign = 'left';
+    ctx.fillText(`CORPORATE INTRANET INTEGRITY: ${integrity}%`, 40, 130);
+
+    // Progress Bar
+    const barW = 944;
+    const barH = 34;
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(40, 145, barW, barH);
+
+    const fillW = Math.max(0, Math.min(barW, (barW * integrity) / 100));
+    const barColor = integrity > 75 ? '#22c55e' : integrity > 40 ? '#f59e0b' : '#ef4444';
+    ctx.fillStyle = barColor;
+    ctx.fillRect(40, 145, fillW, barH);
+
+    // Workstation Nodes Telemetry
+    ctx.fillStyle = '#38bdf8';
+    ctx.font = 'bold 20px monospace';
+    ctx.fillText('ACTIVE WORKSTATIONS TELEMETRY (10 NODES):', 40, 230);
+
+    const nodes = [
+      { name: 'NODE A-1 [MKTG]', status: 'ONLINE' },
+      { name: 'NODE A-2 [SALES]', status: 'ONLINE' },
+      { name: 'NODE A-3 [CS]', status: 'ONLINE' },
+      { name: 'NODE A-4 [MGR]', status: 'ONLINE' },
+      { name: 'NODE B-1 [DEV]', status: 'ONLINE' },
+      { name: 'NODE B-2 [DESIGN]', status: 'ONLINE' },
+      { name: 'NODE B-3 [ACCT]', status: 'ONLINE' },
+      { name: 'NODE B-4 [HR]', status: 'ONLINE' },
+      { name: 'HUB C-1 [SERVER]', status: 'OPTIMAL' },
+      { name: 'HUB C-2 [TESTBED]', status: 'OPTIMAL' },
+    ];
+
+    nodes.forEach((n, idx) => {
+      const col = idx % 5;
+      const row = Math.floor(idx / 5);
+      const nx = 40 + col * 190;
+      const ny = 260 + row * 65;
+
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(nx, ny, 180, 50);
+      ctx.strokeStyle = '#334155';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(nx, ny, 180, 50);
+
+      ctx.fillStyle = '#cbd5e1';
+      ctx.font = '12px monospace';
+      ctx.fillText(n.name, nx + 10, ny + 22);
+
+      ctx.fillStyle = '#4ade80';
+      ctx.font = 'bold 13px monospace';
+      ctx.fillText(`● ${n.status}`, nx + 10, ny + 42);
+    });
+
+    // Alert Bar
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(40, 410, 944, 75);
+    ctx.strokeStyle = '#475569';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(40, 410, 944, 75);
+
+    ctx.fillStyle = malwareCount > 0 ? '#ef4444' : brokenCount > 0 ? '#f59e0b' : '#38bdf8';
+    ctx.font = 'bold 18px monospace';
+    if (malwareCount > 0) {
+      ctx.fillText(`⚠️ CRITICAL THREAT: ${malwareCount} RANSOMWARE BREACH DETECTED! DISPATCH IT HERO!`, 60, 452);
+    } else if (brokenCount > 0) {
+      ctx.fillText(`⚠️ ACTIVE INCIDENT: ${brokenCount} HARDWARE CONNECTION DROPS REPORTED`, 60, 452);
+    } else {
+      ctx.fillText('🛡️ SECURITY POSTURE: NORMAL · ALL FIREWALL GATES IN SYNC', 60, 452);
+    }
+
+    if (this.serverBoardTexture) {
+      this.serverBoardTexture.needsUpdate = true;
+    }
+  }
+
+  public updateServerBoard(integrity: number, brokenCount: number, malwareCount: number) {
+    this.renderServerBoardCanvas(integrity, brokenCount, malwareCount);
+  }
+
+  // =========================================================================
+  // SPATIAL UI: 3D Kinetic Floating Text Feedback
+  // =========================================================================
+  public spawnFloatingPopup(text: string, pos: THREE.Vector3, color: string = '#38bdf8') {
+    const canvas = document.createElement('canvas');
+    canvas.width = 384;
+    canvas.height = 96;
+    const ctx = canvas.getContext('2d')!;
+
+    ctx.font = 'bold 32px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    // Glow outline
+    ctx.strokeStyle = '#000000';
+    ctx.lineWidth = 6;
+    ctx.strokeText(text, 192, 48);
+
+    ctx.fillStyle = color;
+    ctx.fillText(text, 192, 48);
+
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.minFilter = THREE.LinearFilter;
+
+    const spriteMat = new THREE.SpriteMaterial({
+      map: texture,
+      transparent: true,
+      opacity: 1,
+      depthWrite: false,
+    });
+    const sprite = new THREE.Sprite(spriteMat);
+    sprite.position.copy(pos);
+    sprite.position.y += 1.4;
+    sprite.scale.set(2.4, 0.6, 1);
+
+    this.scene.add(sprite);
+
+    this.floatingPopups.push({
+      sprite,
+      velocity: new THREE.Vector3(
+        (Math.random() - 0.5) * 0.2,
+        0.9,
+        (Math.random() - 0.5) * 0.2
+      ),
+      life: 0,
+      maxLife: 1.3,
+    });
+  }
+
   public setComputerStatus(id: string, status: 'normal' | 'broken' | 'repairing' | 'malware') {
     const visual = this.computerVisuals.get(id);
     if (!visual) return;
@@ -588,15 +966,21 @@ export class OfficeScene {
       visual.screenMesh.material = this.matBrokenScreen;
       visual.alertIconGroup.visible = true;
       visual.smokeParticles.visible = true;
+      visual.holoRingMat.color.setHex(0xf59e0b);
+      visual.holoRingMat.opacity = 0.85;
     } else if (status === 'malware') {
       visual.screenMesh.material = this.matMalwareScreen;
       visual.alertIconGroup.visible = true;
       visual.smokeParticles.visible = true;
+      visual.holoRingMat.color.setHex(0xa855f7);
+      visual.holoRingMat.opacity = 0.95;
     } else {
       visual.data.malwareSavedProgress = undefined;
       visual.screenMesh.material = this.matNormalScreen;
       visual.alertIconGroup.visible = false;
       visual.smokeParticles.visible = false;
+      visual.holoRingMat.color.setHex(0x38bdf8);
+      visual.holoRingMat.opacity = 0.2;
       visual.group.position.copy(visual.originalPos);
     }
   }
@@ -610,12 +994,33 @@ export class OfficeScene {
       led.color.setHex(blink ? 0x22c55e : 0x0f172a);
     });
 
+    // Animate 3D floating kinetic popups
+    for (let i = this.floatingPopups.length - 1; i >= 0; i--) {
+      const popup = this.floatingPopups[i];
+      popup.life += delta;
+      popup.sprite.position.addScaledVector(popup.velocity, delta);
+
+      const progress = popup.life / popup.maxLife;
+      popup.sprite.material.opacity = Math.max(0, 1 - progress);
+
+      if (popup.life >= popup.maxLife) {
+        this.scene.remove(popup.sprite);
+        popup.sprite.material.dispose();
+        this.floatingPopups.splice(i, 1);
+      }
+    }
+
     // Animate broken and malware computers (screen flicker, shake, rotating holographic alert)
     this.computerVisuals.forEach((vis) => {
       if (vis.data.status === 'broken' || vis.data.status === 'repairing' || vis.data.status === 'malware') {
         // Floating rotating alert icon
         vis.alertIconGroup.rotation.y += delta * 2.5;
         vis.alertIconGroup.position.y = 1.85 + Math.sin(this.alertTime * 4) * 0.12;
+
+        // Animate floor holo ring pulse
+        vis.floorHoloRing.rotation.z += delta * 1.2;
+        const pulse = 0.65 + Math.sin(this.alertTime * 6) * 0.3;
+        vis.holoRingMat.opacity = pulse;
 
         // Glitch flicker for malware vs hardware
         if (vis.data.status === 'malware') {

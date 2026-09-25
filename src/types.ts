@@ -44,7 +44,7 @@ export interface CableConnection {
   isConnected: boolean;
 }
 
-export type GamePhase = 'intro' | 'playing' | 'minigame' | 'malware_battle' | 'gameover';
+export type GamePhase = 'menu' | 'intro' | 'playing' | 'minigame' | 'malware_battle' | 'gameover';
 export type GameOverReason = 'time' | 'malware';
 
 export interface GameStats {
@@ -64,5 +64,26 @@ export interface HackerInfo {
   targetPcName?: string;
   hackingProgress: number; // 0 to 100
   isNearPlayer: boolean;
+}
+
+export type CameraPerspective = 'third_person' | 'first_person';
+
+export interface RadioDispatch {
+  id: string;
+  senderName: string;
+  role: string;
+  department: 'marketing' | 'dev' | 'finance' | 'management' | 'system';
+  message: string;
+  type: 'incident_broken' | 'incident_malware' | 'resolved' | 'hacker_sighting';
+  timestamp: number;
+}
+
+export interface ShiftObjective {
+  id: string;
+  title: string;
+  desc: string;
+  current: number;
+  target: number;
+  completed: boolean;
 }
 

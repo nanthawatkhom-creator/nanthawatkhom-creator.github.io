@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { Play, Wrench, Clock, ShieldAlert, Monitor, ArrowRight, UserCheck } from 'lucide-react';
+import { X, Play, Wrench, Shield, Skull, Flame, Eye, ArrowRight, Zap, CheckCircle2 } from 'lucide-react';
+import { soundManager } from '../audio/soundManager';
 
 interface HowToPlayModalProps {
   onClose: () => void;
@@ -8,106 +9,321 @@ interface HowToPlayModalProps {
 }
 
 export const HowToPlayModal: React.FC<HowToPlayModalProps> = ({ onClose, isInitial = false }) => {
+  const [activeTab, setActiveTab] = useState<'mission' | 'hardware' | 'hacker' | 'controls' | 'uxui'>('mission');
+
+  const handleClose = () => {
+    soundManager.playUiClick();
+    onClose();
+  };
+
   return (
     <div
       id="how-to-play-modal"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/85 backdrop-blur-md p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4 select-none"
     >
       <motion.div
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.9, opacity: 0 }}
-        className="w-full max-w-xl rounded-3xl border border-slate-700 bg-slate-900 shadow-2xl p-6 md:p-8 text-slate-100 max-h-[90vh] overflow-y-auto"
+        initial={{ opacity: 0, scale: 0.95, y: 10 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: 10 }}
+        className="relative w-full max-w-2xl overflow-hidden rounded-2xl border border-slate-700/80 bg-slate-900/95 shadow-2xl text-slate-100 flex flex-col max-h-[90vh]"
       >
-        <div className="flex items-center space-x-3 mb-4">
-          <div className="p-3 rounded-2xl bg-blue-500/20 text-blue-400 border border-blue-500/30">
-            <Wrench className="w-7 h-7" />
+        {/* Modal Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-950/40">
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-400">
+              <Wrench className="w-5 h-5" />
+            </div>
+            <div>
+              <h2 className="text-lg font-bold tracking-tight text-white">
+                คู่มือปฏิบัติการช่างไอที (Technician Field Manual)
+              </h2>
+              <p className="text-xs text-slate-400">
+                Protocols, Hardware Diagnostics & Hacker Mitigation
+              </p>
+            </div>
           </div>
-          <div>
-            <h2 className="text-2xl font-black tracking-tight text-white">
-              ภารกิจช่างไอทีกู้ชีพคอมพิวเตอร์
-            </h2>
-            <p className="text-xs text-slate-400">IT Support Technician Office Rush - Prototype</p>
-          </div>
+          <button
+            onClick={handleClose}
+            className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-700 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+            title="ปิดคู่มือ"
+          >
+            <X className="w-4 h-4" />
+          </button>
         </div>
 
-        {/* Story Intro */}
-        <div className="rounded-2xl bg-slate-950/60 border border-slate-800 p-4 mb-5 text-sm text-slate-300 leading-relaxed">
-          ยินดีต้อนรับสู่สำนักงานสุดวุ่นวาย! คุณคือช่างไอทีประจำออฟฟิศที่ต้องคอยรับมือกับคอมพิวเตอร์พัง และศัตรูตัวฉกาจที่คอยป่วนสำนักงาน!
+        {/* Navigation Tabs (Functional, Clean segmented buttons) */}
+        <div className="flex items-center gap-1 px-6 py-2.5 border-b border-slate-800 bg-slate-950/30 overflow-x-auto">
+          <button
+            onClick={() => {
+              soundManager.playUiClick();
+              setActiveTab('mission');
+            }}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${
+              activeTab === 'mission'
+                ? 'bg-slate-800 text-cyan-400 border border-slate-700'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            1. ภารกิจหลัก & เวลา
+          </button>
+          <button
+            onClick={() => {
+              soundManager.playUiClick();
+              setActiveTab('hardware');
+            }}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${
+              activeTab === 'hardware'
+                ? 'bg-slate-800 text-cyan-400 border border-slate-700'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            2. ซ่อมสายไฟหลุด
+          </button>
+          <button
+            onClick={() => {
+              soundManager.playUiClick();
+              setActiveTab('hacker');
+            }}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${
+              activeTab === 'hacker'
+                ? 'bg-slate-800 text-cyan-400 border border-slate-700'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            3. แฮกเกอร์ & มัลแวร์
+          </button>
+          <button
+            onClick={() => {
+              soundManager.playUiClick();
+              setActiveTab('controls');
+            }}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${
+              activeTab === 'controls'
+                ? 'bg-slate-800 text-cyan-400 border border-slate-700'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            4. การควบคุม & กล้อง
+          </button>
+          <button
+            onClick={() => {
+              soundManager.playUiClick();
+              setActiveTab('uxui');
+            }}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${
+              activeTab === 'uxui'
+                ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            5. ระบบ UX/UI สื่อสารให้ผู้เล่นอิน
+          </button>
         </div>
 
-        {/* Steps & Obstacles */}
-        <div className="space-y-3 mb-6 text-xs md:text-sm">
-          <div className="flex items-start space-x-3 p-3 rounded-xl bg-slate-800/40 border border-slate-800">
-            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-red-500/20 text-red-400 font-bold">
-              1
-            </div>
-            <div>
-              <strong className="text-white">คอมเสียสายไฟชำรุด:</strong> หน้าจอกระพริบสีแดง มีประกายไฟ เข้าใกล้แล้วกด <strong className="text-amber-400 font-mono">[E]</strong> <strong className="text-amber-300">คลิกลากสายไฟ (Drag & Drop)</strong> จากขั้วพอร์ตต้นทางฝั่งซ้ายไปเสียบเข้าช่องปลายทางสีเดียวกันฝั่งขวาให้ถูกต้องครบทุกสาย
-            </div>
-          </div>
+        {/* Tab Content Area */}
+        <div className="p-6 overflow-y-auto space-y-4 text-sm leading-relaxed">
+          {activeTab === 'mission' && (
+            <div className="space-y-4">
+              <div className="p-4 rounded-xl border border-slate-800 bg-slate-950/50 space-y-2">
+                <div className="font-semibold text-white flex items-center gap-2">
+                  <span className="text-cyan-400">⏱️</span> กะเวลาปฏิบัติหน้าที่ 3 นาที (Shift Duty: 180s)
+                </div>
+                <p className="text-xs text-slate-300">
+                  คุณมีเวลา 3 นาทีในการดูแลคอมพิวเตอร์ทั้ง 6 เครื่องในสำนักงานให้ทำงานได้ต่อเนื่อง ซ่อมคอมที่เสียให้ได้มากที่สุด และสะสมคะแนนเพื่อเลื่อนขั้นเป็น Senior IT Specialist!
+                </p>
+              </div>
 
-          <div className="flex items-start space-x-3 p-3 rounded-xl bg-purple-950/30 border border-purple-800/50">
-            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-purple-500/20 text-purple-400 font-bold">
-              2
-            </div>
-            <div>
-              <strong className="text-purple-300">🦹 มี HACKER แอบย่องเข้ามาแฮกคอม:</strong> แฮกเกอร์จะใส่ฮู้ดดำย่องมาแฮกเครื่อง รีบวิ่งไปฟาดด้วยไม้ไอที <strong className="text-amber-400 font-mono">[F]</strong> หรือคลิกซ้าย เพื่อสกัดกั้นก่อนเครื่องติดเชื้อ!
-            </div>
-          </div>
+              <div className="p-4 rounded-xl border border-rose-500/30 bg-rose-950/20 space-y-2">
+                <div className="font-semibold text-rose-300 flex items-center gap-2">
+                  <Skull className="w-4 h-4 text-rose-400" />
+                  <span>เงื่อนไขวิกฤต: เครือข่ายล่มสลาย (System Breach)</span>
+                </div>
+                <p className="text-xs text-slate-300">
+                  หากปล่อยให้มีคอมพิวเตอร์ติดไวรัสมัลแวร์พร้อมกันครบ <strong className="text-white">2 เครื่อง</strong> ระบบจะเกิดการแพร่กระจายของ Worm และเกิด <strong>GAME OVER ทันที</strong>! อย่าปล่อยให้คอมติดมัลแวร์ค้างในระบบนาน
+                </p>
+              </div>
 
-          <div className="flex items-start space-x-3 p-3 rounded-xl bg-pink-950/30 border border-pink-800/50">
-            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-pink-500/20 text-pink-400 font-bold">
-              3
+              <div className="p-4 rounded-xl border border-amber-500/30 bg-amber-950/20 space-y-2">
+                <div className="font-semibold text-amber-300 flex items-center gap-2">
+                  <Flame className="w-4 h-4 text-amber-400" />
+                  <span>ระบบ Combo & สกิลวิ่งเร็วติดไฟ (Turbo Speed Boost)</span>
+                </div>
+                <p className="text-xs text-slate-300">
+                  ทุกครั้งที่คุณซ่อมคอมพิวเตอร์สำเร็จ คุณจะได้รับสกิล <strong className="text-white">วิ่งเร็วติดไฟลุกโชน</strong> นาน 6.5 วินาที พร้อมสะสมตัวคูณ Combo ช่วยให้วิ่งไปจัดการคอมเครื่องต่อไปได้ทันท่วงที
+                </p>
+              </div>
             </div>
-            <div>
-              <strong className="text-pink-300">👾 คอมติดมัลแวร์ (Malware Battle & Save State):</strong> จอคอมจะกลายเป็นสีม่วงกระพริบหัวกะโหลก กด <strong className="text-pink-400 font-mono">[E]</strong> เพื่อเปิดเทอร์มินัลพิมพ์โค้ดสู้ Hacker <strong className="text-cyan-300 underline">หากยังแก้ไม่เสร็จ สามารถกด [พักการแก้ & ออก] หรือกด [Esc] แล้วกลับมาซ่อมต่อจากจุดเดิมได้โดยไม่ต้องเริ่มใหม่!</strong>
-            </div>
-          </div>
+          )}
 
-          <div className="flex items-start space-x-3 p-3 rounded-xl bg-amber-950/40 border border-amber-500/60 shadow-lg shadow-orange-950/40">
-            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-amber-500/30 text-amber-300 font-black">
-              4
-            </div>
-            <div>
-              <strong className="text-amber-300">🔥 สกิลวิ่งเร็วติดไฟ (Fire Speed Boost) & Combo:</strong> ทุกครั้งที่ซ่อมคอมพิวเตอร์เสร็จ คุณจะได้รับสกิลพิเศษ <strong className="text-white">วิ่งเร็วติดไฟลุกโชน (Speed Boost)</strong> นาน 6.5 วินาที พร้อมสะสม Combo ช่วยให้วิ่งไปจัดการคอมเครื่องต่อไปได้ทันท่วงที!
-            </div>
-          </div>
+          {activeTab === 'hardware' && (
+            <div className="space-y-4">
+              <div className="p-4 rounded-xl border border-slate-800 bg-slate-950/50 space-y-2">
+                <div className="font-semibold text-white flex items-center gap-2">
+                  <Wrench className="w-4 h-4 text-amber-400" />
+                  <span>การสังเกตคอมพิวเตอร์เสียสายไฟหลุด</span>
+                </div>
+                <p className="text-xs text-slate-300">
+                  คอมพิวเตอร์ที่มีปัญหาฮาร์ดแวร์ หน้าจอจะกระพริบสีแดงและมีประกายไฟควันพวยพุ่ง ให้วิ่งเข้าไปใกล้แล้วกด <strong className="text-amber-400 font-mono">[E]</strong> หรือ <strong className="text-amber-400 font-mono">[Space]</strong>
+                </p>
+              </div>
 
-          <div className="flex items-start space-x-3 p-3 rounded-xl bg-rose-950/40 border border-rose-600/60 shadow-lg shadow-rose-950/40 animate-pulse">
-            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-rose-500/30 text-rose-300 font-black">
-              5
+              <div className="p-4 rounded-xl border border-slate-800 bg-slate-950/50 space-y-2">
+                <div className="font-semibold text-white flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  <span>วิธีแก้มินิเกมสายไฟ (Drag & Drop Cable)</span>
+                </div>
+                <p className="text-xs text-slate-300">
+                  คลิกลากสายเคเบิลจากพอร์ตฝั่งซ้าย ไปเสียบเข้ากับช่องรับสัญญาณสีเดียวกันฝั่งขวาให้ครบทุกสาย หากลากผิดสายจะทำให้เสียเวลา 10 วินาที
+                </p>
+              </div>
             </div>
-            <div>
-              <strong className="text-rose-300">💀 กฎความยากระดับวิกฤต (Hardcore Game Over):</strong> หากในออฟฟิศมีคอมพิวเตอร์โดนไวรัสมัลแวร์ครบ <strong className="text-white underline">2 เครื่อง</strong> จะเกิด System Breach และ <strong className="text-rose-400">Game Over ทันที</strong>! อย่าปล่อยให้มัลแวร์ค้างในระบบนานจนแพร่กระจายผ่าน LAN
-            </div>
-          </div>
+          )}
 
-          <div className="flex items-start space-x-3 p-3 rounded-xl bg-blue-500/10 border border-blue-800/40">
-            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-blue-500/20 text-blue-400 font-bold">
-              6
+          {activeTab === 'hacker' && (
+            <div className="space-y-4">
+              <div className="p-4 rounded-xl border border-purple-500/30 bg-purple-950/20 space-y-2">
+                <div className="font-semibold text-purple-300 flex items-center gap-2">
+                  <Zap className="w-4 h-4 text-purple-400" />
+                  <span>Hacker บุกออฟฟิศ & ไม้ไอทีกำราบ [F]</span>
+                </div>
+                <p className="text-xs text-slate-300">
+                  แฮกเกอร์ใส่ฮู้ดดำจะแอบย่องเข้ามาเจาะระบบคอมพิวเตอร์ เมื่อได้ยินเสียงไซเรนเตือน รีบวิ่งเข้าไปแล้วกดปุ่ม <strong className="text-amber-400 font-mono">[F]</strong> หรือคลิกซ้าย เพื่อฟาดไม้ไอทีสกัดกั้นก่อนแฮกเกอร์จะปล่อยมัลแวร์สำเร็จ!
+                </p>
+              </div>
+
+              <div className="p-4 rounded-xl border border-slate-800 bg-slate-950/50 space-y-2">
+                <div className="font-semibold text-white flex items-center gap-2">
+                  <Skull className="w-4 h-4 text-pink-400" />
+                  <span>มินิเกมล้างมัลแวร์ & ระบบเซฟต่อจากเดิม (Save State)</span>
+                </div>
+                <p className="text-xs text-slate-300">
+                  หากคอมพิวเตอร์โดนแฮก จอจะกลายเป็นสีม่วงรูปหัวกะโหลก ให้กด <strong className="text-pink-400 font-mono">[E]</strong> เพื่อเปิดเทอร์มินัลพิมพ์โค้ดสู้ไวรัส
+                  <br />
+                  <strong className="text-cyan-300">✨ ฟีเจอร์พิเศษ:</strong> หากติดธุระต้องวิ่งไปทุบแฮกเกอร์ สามารถกด <strong className="text-white">[พักการแก้ & ออก]</strong> หรือกด [Esc] เพื่อบันทึกความคืบหน้าไว้ แล้วค่อยกลับมาพิมพ์ต่อจากสเตจเดิมได้เลย!
+                </p>
+              </div>
             </div>
-            <div>
-              <strong className="text-white">เวลา 3 นาที:</strong> ซ่อมคอมพิวเตอร์ ปกป้องเครือข่าย และสะสมคะแนนให้ได้ระดับ S+ ก่อนหมดกะ!
+          )}
+
+          {activeTab === 'controls' && (
+            <div className="space-y-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                <div className="p-3 rounded-xl border border-slate-800 bg-slate-950/50">
+                  <div className="font-semibold text-white mb-1">การเคลื่อนที่:</div>
+                  <div className="text-slate-300 font-mono">W / A / S / D หรือ ลูกศร</div>
+                  <div className="text-slate-400 text-[11px] mt-0.5">หรือจอยสติ๊กสัมผัสบนมือถือ</div>
+                </div>
+
+                <div className="p-3 rounded-xl border border-slate-800 bg-slate-950/50">
+                  <div className="font-semibold text-white mb-1">การซ่อม / ปฏิสัมพันธ์:</div>
+                  <div className="text-emerald-400 font-mono font-bold">[E] หรือ [Space]</div>
+                  <div className="text-slate-400 text-[11px] mt-0.5">กดเมื่ออยู่ใกล้คอมพิวเตอร์</div>
+                </div>
+
+                <div className="p-3 rounded-xl border border-slate-800 bg-slate-950/50">
+                  <div className="font-semibold text-white mb-1">ทุบแฮกเกอร์ด้วยไม้:</div>
+                  <div className="text-amber-400 font-mono font-bold">[F] หรือ คลิกซ้าย</div>
+                  <div className="text-slate-400 text-[11px] mt-0.5">วิ่งเข้าใกล้แฮกเกอร์แล้วกด</div>
+                </div>
+
+                <div className="p-3 rounded-xl border border-slate-800 bg-slate-950/50">
+                  <div className="font-semibold text-white mb-1">สลับมุมมองกล้อง (1P/3P):</div>
+                  <div className="text-cyan-400 font-mono font-bold">[V] หรือ [C]</div>
+                  <div className="text-slate-400 text-[11px] mt-0.5">สลับบุคคลที่ 1 และ 3</div>
+                </div>
+              </div>
+
+              <div className="p-3 rounded-xl border border-slate-800 bg-slate-950/50 text-xs space-y-1">
+                <div className="font-semibold text-cyan-300 flex items-center gap-1.5">
+                  <Eye className="w-3.5 h-3.5" />
+                  <span>การหันมุมกล้องตามธรรมชาติ (Natural Camera):</span>
+                </div>
+                <p className="text-slate-300">
+                  คลิกลากเมาส์ไปทางขวา หน้าจอจะหันไปทางขวาตามทิศทางมือจริง ลากซ้ายหันซ้าย หากต้องการกลับด้าน สามารถกดปุ่มเข็มทิศบนแถบ HUD ด้านบนได้ตลอดเวลา
+                </p>
+              </div>
             </div>
-          </div>
+          )}
+
+          {activeTab === 'uxui' && (
+            <div className="space-y-3.5 text-xs">
+              <div className="p-3.5 rounded-xl border border-cyan-500/30 bg-cyan-950/20 space-y-1.5">
+                <div className="font-bold text-cyan-300 text-sm flex items-center gap-2">
+                  <span>🎮</span>
+                  <span>ถอดบทเรียน UX/UI: สื่อสารอย่างไรให้ผู้เล่นอิน</span>
+                </div>
+                <p className="text-slate-300 text-[11px] leading-relaxed">
+                  เกมนี้ถูกออกแบบโครงสร้างอินเทอร์เฟซตามหลักทฤษฎีเกม UX/UI ชั้นนำ (อ้างอิง Fagerholt & Lorentzon และบทวิเคราะห์จากอุตสาหกรรมเกม) โดยแบ่งการสื่อสารออกเป็น 4 รูปแบบอย่างสมดุล ไม่รกตา ไม่เป็น AI Slop:
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                {/* 1. Diegetic */}
+                <div className="p-3 rounded-xl border border-emerald-500/30 bg-slate-950/60 space-y-1">
+                  <div className="font-bold text-emerald-400 flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                    <span>1. Diegetic UI (อยู่ในโลกจริงของเกม)</span>
+                  </div>
+                  <p className="text-slate-300 text-[11px] leading-relaxed">
+                    หน้าจอคอมพิวเตอร์ CRT/LCD แต่ละโต๊ะที่มีไอคอนสถานะขัดข้องจริง จอมอนิเตอร์ยักษ์ NOC Server Wall ในห้องเซิร์ฟเวอร์ และแท็บเล็ตภาคสนาม Rugged Toughpad ที่ตัวละครถือตรวจสอบพิกัด
+                  </p>
+                </div>
+
+                {/* 2. Non-Diegetic */}
+                <div className="p-3 rounded-xl border border-blue-500/30 bg-slate-950/60 space-y-1">
+                  <div className="font-bold text-blue-400 flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-blue-400" />
+                    <span>2. Non-Diegetic UI (ข้อมูลส่งตรงถึงผู้เล่น)</span>
+                  </div>
+                  <p className="text-slate-300 text-[11px] leading-relaxed">
+                    แถบ HUD ด้านบนที่รวบรวมนาฬิกานับถอยหลัง 3 นาที, แถบสุขภาพเครือข่าย Network Health Gauge, รายการเป้าหมายกะการทำงาน (Shift Objectives) ออกแบบสไตล์ Minimalist แถบเดียวไม่บดบังฉาก
+                  </p>
+                </div>
+
+                {/* 3. Spatial UI */}
+                <div className="p-3 rounded-xl border border-amber-500/30 bg-slate-950/60 space-y-1">
+                  <div className="font-bold text-amber-400 flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-amber-400" />
+                    <span>3. Spatial UI (บอกพิกัดในมิติ 3 มิติ)</span>
+                  </div>
+                  <p className="text-slate-300 text-[11px] leading-relaxed">
+                    วงแหวนโฮโลแกรมเรืองแสงบนพื้นใต้โต๊ะคอมพิวเตอร์ (วงฟ้า=ปกติ, วงส้ม=สายหลุด, วงม่วง=มัลแวร์), รัศมีขอบเขตอันตรายรอบตัวแฮกเกอร์ และตัวหนังสือลอยพวยพุ่ง Floating Action Popups ยามทุบสำเร็จ
+                  </p>
+                </div>
+
+                {/* 4. Meta UI */}
+                <div className="p-3 rounded-xl border border-purple-500/30 bg-slate-950/60 space-y-1">
+                  <div className="font-bold text-purple-400 flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-purple-400" />
+                    <span>4. Meta UI (ความรู้สึกเสมือนผู้เล่นอยู่ในเหตุการณ์)</span>
+                  </div>
+                  <p className="text-slate-300 text-[11px] leading-relaxed">
+                    เสียงและแถบข้อความวิทยุสื่อสาร วอไอที (Colleague Radio Comms) จากเพื่อนร่วมแผนก (การตลาด, บัญชี, Dev, หัวหน้า IT) และขอบจอสีแดงกระพริบฉุกเฉิน Vignette เมื่อเครือข่ายตกอยู่ในภาวะเสี่ยง
+                  </p>
+                </div>
+              </div>
+
+              <div className="p-3 rounded-xl border border-slate-800 bg-slate-950/40 text-[11px] text-slate-400 flex items-center justify-between">
+                <span>หลักการปฏิสัมพันธ์: ชัดเจน · ลำดับชั้นสายตาดี · เข้าถึงง่ายด้วยคีย์บอร์ด & สัมผัส</span>
+                <span className="font-mono text-cyan-400 font-semibold">ZERO-SLOP UX</span>
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* Features highlight */}
-        <div className="flex items-center gap-2 text-xs text-slate-400 mb-6 bg-slate-950/40 p-3 rounded-xl border border-slate-800/60">
-          <UserCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-          <span>โมเดลตัวละคร 3 มิติ สมจริงทุกสัดส่วนพร้อมชุดช่างไอที ป้ายชื่อ แว่นตา ท่าทางอนิเมชั่น และการหันตัวที่นุ่มนวล</span>
+        {/* Modal Footer */}
+        <div className="flex items-center justify-between px-6 py-4 border-t border-slate-800 bg-slate-950/40">
+          <div className="text-xs text-slate-500 font-mono hidden sm:block">
+            SECURITY CLEARANCE: TECHNICIAN
+          </div>
+          <button
+            onClick={handleClose}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs transition-colors cursor-pointer ml-auto"
+          >
+            <span>{isInitial ? 'เริ่มเข้ากะปฏิบัติหน้าที่!' : 'เข้าใจแล้ว (Done)'}</span>
+            <ArrowRight className="w-4 h-4" />
+          </button>
         </div>
-
-        {/* Play Button */}
-        <button
-          id="start-shift-btn"
-          onClick={onClose}
-          className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-base shadow-lg shadow-blue-600/30 transition-all cursor-pointer active:scale-98"
-        >
-          <span>{isInitial ? 'เริ่มเข้ากะปฏิบัติหน้าที่!' : 'เข้าใจแล้ว กลับสู่เกม'}</span>
-          <ArrowRight className="w-5 h-5" />
-        </button>
       </motion.div>
     </div>
   );

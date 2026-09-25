@@ -27,6 +27,9 @@ export class HackerModel {
   private starsGroup: THREE.Group;
   private statusBillboard: THREE.Group;
   private progressRingMat: THREE.MeshBasicMaterial;
+  private threatRing: THREE.Mesh;
+  private threatRingMat: THREE.MeshBasicMaterial;
+  public isNearPlayer: boolean = false;
 
   // Animation state
   public state: HackerState = 'sneaking';
@@ -310,6 +313,19 @@ export class HackerModel {
     this.statusBillboard.add(skullMesh);
 
     this.group.add(this.statusBillboard);
+
+    // 8. Spatial UI: Tactical Threat & Whack Strike Zone Ring on Floor (2.8m radius)
+    const ringGeo = new THREE.RingGeometry(2.4, 2.75, 32);
+    this.threatRingMat = new THREE.MeshBasicMaterial({
+      color: 0xef4444,
+      transparent: true,
+      opacity: 0.35,
+      side: THREE.DoubleSide,
+    });
+    this.threatRing = new THREE.Mesh(ringGeo, this.threatRingMat);
+    this.threatRing.rotation.x = -Math.PI / 2;
+    this.threatRing.position.y = 0.02;
+    this.group.add(this.threatRing);
   }
 
   public setHackerState(state: HackerState) {
@@ -320,6 +336,10 @@ export class HackerModel {
     } else {
       this.starsGroup.visible = false;
     }
+  }
+
+  public setNearPlayer(near: boolean) {
+    this.isNearPlayer = near;
   }
 
   public updateFacing(targetYaw: number, delta: number, speed: number = 12) {
@@ -334,6 +354,22 @@ export class HackerModel {
   public update(delta: number) {
     this.animTime += delta;
     const t = this.animTime;
+
+    // Animate Spatial Threat Ring
+    this.threatRing.rotation.z += delta * 1.5;
+    if (this.isNearPlayer) {
+      // In strike range! Flash amber/gold to signal "[F] WHACK!"
+      const pulse = 0.65 + Math.sin(t * 12) * 0.3;
+      this.threatRingMat.opacity = pulse;
+      this.threatRingMat.color.setHex(0xf59e0b); // Warning Gold
+    } else if (this.state === 'hacking') {
+      const pulse = 0.5 + Math.sin(t * 8) * 0.25;
+      this.threatRingMat.opacity = pulse;
+      this.threatRingMat.color.setHex(0xa855f7); // Cyber Purple
+    } else {
+      this.threatRingMat.opacity = 0.3;
+      this.threatRingMat.color.setHex(0xef4444); // Red stealth alert
+    }
 
     // Pulse visor color & laptop screen
     if (this.state === 'hacking') {

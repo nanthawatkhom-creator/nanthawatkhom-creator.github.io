@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Wrench, Zap } from 'lucide-react';
+import { Wrench, Zap, Eye } from 'lucide-react';
+import { CameraPerspective } from '../types';
 
 interface MobileControlsProps {
   onMove: (vector: { x: number; y: number }) => void;
@@ -7,6 +8,8 @@ interface MobileControlsProps {
   onWhackBat?: () => void;
   canInteract: boolean;
   isHackerNear?: boolean;
+  cameraPerspective?: CameraPerspective;
+  onToggleCamera?: () => void;
 }
 
 export const MobileControls: React.FC<MobileControlsProps> = ({
@@ -15,6 +18,8 @@ export const MobileControls: React.FC<MobileControlsProps> = ({
   onWhackBat,
   canInteract,
   isHackerNear = false,
+  cameraPerspective = 'third_person',
+  onToggleCamera,
 }) => {
   const joystickBaseRef = useRef<HTMLDivElement>(null);
   const [knobPos, setKnobPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
@@ -96,6 +101,21 @@ export const MobileControls: React.FC<MobileControlsProps> = ({
 
       {/* Action Buttons Group */}
       <div className="pointer-events-auto flex items-center gap-3">
+        {/* Toggle Camera Perspective Button */}
+        {onToggleCamera && (
+          <button
+            onClick={onToggleCamera}
+            className={`flex h-14 w-14 flex-col items-center justify-center rounded-full border-2 shadow-2xl transition-all active:scale-90 cursor-pointer ${
+              cameraPerspective === 'first_person'
+                ? 'border-cyan-400 bg-cyan-600/90 text-white shadow-cyan-500/50'
+                : 'border-slate-600 bg-slate-900/90 text-slate-200'
+            }`}
+          >
+            <Eye className="w-5 h-5 mb-0.5" />
+            <span className="text-[9px] font-black">{cameraPerspective === 'first_person' ? '1P' : '3P'}</span>
+          </button>
+        )}
+
         {/* Whack Bat Button */}
         <button
           onClick={onWhackBat}
