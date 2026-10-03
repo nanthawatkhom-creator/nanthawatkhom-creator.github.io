@@ -451,6 +451,7 @@ body.dark-mode .hero .field-sprig{display:none}
 .language-switch button[aria-pressed="true"]{background:var(--yellow);color:var(--navy)}
 .language-switch button:focus-visible{outline:2px solid var(--yellow);outline-offset:2px}
 @media(max-width:700px){.language-switch{margin-left:auto;margin-right:8px}.language-switch button{min-width:32px;height:28px}.nav{padding-left:12px}.brand{font-size:.72rem}}
+@media(min-width:701px){.nav{justify-content:flex-start}.navlinks{margin-left:auto}.language-switch{margin-left:16px}}
 @media(min-width:981px){body.lang-en .hero h1{font-size:clamp(2.8rem,3.8vw,4rem)}body.lang-en .hero h1 em{font-size:.76em;white-space:normal}}
 @media(max-width:980px){body.lang-en .hero h1{font-size:clamp(2.5rem,5.2vw,3.2rem)}}
 @media(max-width:700px){body.lang-en .hero h1{font-size:clamp(2.35rem,9vw,3rem)}body.lang-en .hero h1 em{white-space:normal}}
@@ -460,10 +461,10 @@ body.lang-en .event-media:after{content:"Click to enlarge"}
 <body>
 <nav class="nav" id="nav">
   <a class="brand" href="#top"><span style="width:10px;height:10px;border-radius:50%;background:var(--yellow);display:inline-block"></span> NANTHAWAT <b>/ NTW</b></a>
-  <div class="language-switch" role="group" aria-label="เลือกภาษา"><button type="button" data-language-option="th" aria-pressed="true">TH</button><button type="button" data-language-option="en" aria-pressed="false">EN</button></div>
   <div class="navlinks">
     <a href="#story">เกี่ยวกับผม</a><a href="#journey">เส้นทาง</a><a href="#now">ปัจจุบัน</a><a href="#work">ผลงาน</a><a href="#contact">ติดต่อ</a>
   </div>
+  <div class="language-switch" role="group" aria-label="เลือกภาษา"><button type="button" data-language-option="th" aria-pressed="true">TH</button><button type="button" data-language-option="en" aria-pressed="false">EN</button></div>
   <button class="hamb" id="hamb" aria-label="เปิดเมนู">☰</button>
 </nav>
 <main id="top">
@@ -471,7 +472,7 @@ body.lang-en .event-media:after{content:"Click to enlarge"}
   <div class="sun-wash" aria-hidden="true"></div>
   <div class="hero-wrap">
     <div class="hero-copy reveal">
-      <div class="eyebrow">แฟ้มผลงาน</div>
+      <div class="eyebrow">Life</div>
       <p class="hero-kicker">นันธวัฒน์ คมคาย · เต้</p>
       <h1><span class="hero-title-main">เต็มที่กับชีวิต</span><em>เรียนรู้จากทุกก้าว</em></h1>
       <p class="hero-note">ผมสนุกกับเทคโนโลยี ชอบลองสิ่งใหม่ และเติบโตจากประสบการณ์จริง</p>
@@ -747,7 +748,7 @@ const tabs=[...document.querySelectorAll('.tab')], cards=[...document.querySelec
 const englishCopy={
   'เกี่ยวกับผม':'About me','เส้นทาง':'Journey','ปัจจุบัน':'Now','ผลงาน':'Work','ติดต่อ':'Contact',
   'เลือกภาษา':'Choose language','เปิดเมนู':'Open menu','ปิดเมนู':'Close menu','ปิด':'Close',
-  'แฟ้มผลงาน':'Portfolio','นันธวัฒน์ คมคาย · เต้':'Nanthawat Khomkhai · Tae',
+  'นันธวัฒน์ คมคาย · เต้':'Nanthawat Khomkhai · Tae',
   'เต็มที่กับชีวิต':'Live fully','เรียนรู้จากทุกก้าว':'Learn from every step',
   'ผมสนุกกับเทคโนโลยี ชอบลองสิ่งใหม่ และเติบโตจากประสบการณ์จริง':'I enjoy technology, trying new things, and growing through real-world experience.',
   'ดูเส้นทางของผม ↓':'Explore my journey ↓','ติดต่อ ↗':'Contact ↗',
