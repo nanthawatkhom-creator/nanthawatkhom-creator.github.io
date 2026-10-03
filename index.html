@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#0d1a2b">
+<meta name="theme-color" content="#1b2b24">
 <meta name="description" content="นันธวัฒน์ คมคาย — นักศึกษา Game & Interactive Media ผู้เรียนรู้จากงาน เทคโนโลยี และการลงมือทำ">
 <title>Nanthawat Khomkhai — Portfolio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -254,6 +254,187 @@ body:before{display:none}
 .work-card.filter-in{animation:workCardIn .42s cubic-bezier(.2,.7,.2,1) both}
 @keyframes workCardIn{from{opacity:0;transform:translateY(12px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
 @media(prefers-reduced-motion:reduce){.hero-copy> *{opacity:1;transform:none}.poster-frame.visible .poster-meta{opacity:1;transform:none}}
+
+/* Field notes: warm paper, forest shade, and late-afternoon sunlight. */
+:root{--paper:#f4f0e6;--cream:#eae5d7;--warm:#d8cbb0;--navy:#1b2b24;--navy-2:#2b3c30;--ink:#26352b;--muted:#6d7468;--yellow:#dfb765;--line:rgba(38,53,43,.15);--blue:#8b947c}
+body{background:var(--paper);color:var(--ink)}
+body:before{display:block;opacity:.022;mix-blend-mode:multiply}
+::selection{background:#e7c77e;color:#243328}
+.nav{background:rgba(28,43,35,.94);border-color:rgba(235,220,187,.18);box-shadow:0 10px 32px rgba(28,36,27,.18)}
+.navlinks a:last-child{color:#edc879}
+.navlinks a.is-current{color:#edc879;background:rgba(255,255,255,.08)}
+.navlinks a:hover{background:rgba(255,255,255,.1)}
+.hamb{color:#f5f0e6}
+.navlinks{background-color:rgba(28,43,35,.97)}
+.hero{isolation:isolate;background:radial-gradient(ellipse at 77% 14%,rgba(227,185,111,.12),transparent 28%),linear-gradient(122deg,#17261f 0%,#26382d 55%,#314033 100%);}
+.hero:before{display:block;content:"";position:absolute;z-index:0;left:auto;right:12%;top:-210px;bottom:auto;width:clamp(300px,38vw,570px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(248,218,156,.8) 0%,rgba(233,196,127,.52) 17%,rgba(228,190,117,.18) 36%,rgba(228,190,117,0) 70%);filter:blur(8px);opacity:.64;animation:sunBreath 12s ease-in-out infinite alternate}
+.hero:after{content:"";position:absolute;inset:-10% 0 0;z-index:0;pointer-events:none;background:linear-gradient(112deg,transparent 37%,rgba(247,220,160,.045) 50%,transparent 64%);opacity:.8;transform:translate3d(var(--sun-dx,0px),var(--sun-dy,0px),0);transition:transform .8s cubic-bezier(.2,.7,.2,1)}
+.sun-wash{position:absolute;z-index:0;inset:-18%;pointer-events:none;background:radial-gradient(ellipse at 78% 18%,rgba(255,222,158,.2),transparent 27%),radial-gradient(ellipse at 58% 44%,rgba(237,194,121,.09),transparent 34%);mix-blend-mode:screen;opacity:.85;transform:translate3d(var(--sun-dx,0px),var(--sun-dy,0px),0);transition:transform 1.1s cubic-bezier(.2,.7,.2,1)}
+.field-sprig{position:absolute;z-index:3;left:-3%;bottom:2%;width:clamp(90px,10vw,130px);height:auto;opacity:.38;pointer-events:none;filter:drop-shadow(0 5px 12px rgba(8,16,12,.2));transform:rotate(-7deg)}
+.hero-wrap{z-index:2}
+.eyebrow{color:#edc879}
+.hero-kicker{color:#e0dfcf}
+.hero h1 em{color:#e8e1d0}
+.hero h1 span{color:#e4bd70}
+.hero-note{color:#d1d4c8}
+.hero-note strong{color:#fff8e8}
+.btn{border-color:rgba(244,233,205,.25)}
+.btn.primary{background:#e4bd70;border-color:#e4bd70;color:#26352b}
+.btn.ghost{background:rgba(246,239,219,.06)}
+.poster{border-color:rgba(243,224,182,.48);box-shadow:0 28px 70px rgba(6,15,10,.34)}
+.poster:before{content:"";position:absolute;z-index:1;inset:0;pointer-events:none;background:radial-gradient(ellipse at 76% 12%,rgba(255,224,159,.3),transparent 43%);mix-blend-mode:screen}
+.poster img{filter:saturate(.9) sepia(.07) contrast(1.02)}
+.poster:after{background:linear-gradient(180deg,rgba(18,29,22,.02) 32%,rgba(18,29,22,.1) 56%,rgba(12,20,15,.83) 100%)}
+.poster-meta p{color:#eee7d5}
+.section-label{color:#777968}
+.section-title em{color:#78836a}
+.manifesto{position:relative;isolation:isolate;background:radial-gradient(ellipse at 84% 0%,rgba(225,195,133,.17),transparent 30%),var(--cream)}
+.quote-card{background:#26382c;border-color:rgba(255,255,255,.13)}
+.quote-card:after{border-color:rgba(224,185,112,.22);box-shadow:0 0 0 60px rgba(224,185,112,.035),0 0 0 120px rgba(224,185,112,.02)}
+.quote-card blockquote em{color:#e4bd70}
+.story-card{background:rgba(255,253,247,.88)}
+.timeline:before{background:rgba(51,68,49,.14)}
+.timeline-progress{background:linear-gradient(#dfb765,#89947a)}
+.event-dot{background:#f6f2e8;border-color:rgba(50,65,48,.18);color:#4c5d49}
+.event.active .event-dot{background:#dfb765;border-color:#dfb765;color:#26352b}
+.event-card{background:#fbf9f2}
+.event.active .event-card{border-color:rgba(184,143,67,.38);box-shadow:0 16px 46px rgba(49,56,37,.09)}
+.event-copy h3 em{color:#78836a}
+.event-media:after{background:rgba(35,51,40,.84)}
+.collage-photo{background:#e5dfd0}
+.now{background:#1d2d24;color:#f4f0e6}
+.now .section-label{color:#c4c4aa}
+.now .section-title em{color:#d8c69b}
+.now-card{background:#263a2e;border-color:rgba(237,229,204,.14)}
+.now-cover{background:#17231c}
+.now-badge{border-color:rgba(231,192,119,.35);color:#e4bd70}
+.now-id{color:#c4c7b4}
+.now-body p{color:#d1d4c8}
+.work-tabs .tab{background:#faf7ee;color:#59634f}
+.work-tabs .tab.active,.work-tabs .tab:hover{background:#2b3c30;color:#fbf6e8;border-color:#2b3c30}
+.work-card{background:#fbf9f2}
+.work-card:hover{box-shadow:0 24px 70px rgba(48,55,38,.12)}
+.work-label{background:rgba(35,51,40,.88)}
+.work-link{color:#596b4f}
+.snapshots{background:linear-gradient(180deg,#eae5d7,#f0ecdf)}
+.snap{background:#d8cfbb;border-color:rgba(51,65,45,.18);box-shadow:0 8px 24px rgba(55,52,38,.06)}
+.snap img{filter:saturate(.9)}
+.interest-note{color:#747867}
+.contact{background:var(--paper)}
+.contact-box h2 em{color:#78836a}
+.social{background:#faf7ee}
+.social:hover{background:#27392d}
+footer{background:var(--paper);color:#737769}
+
+@keyframes sunBreath{from{opacity:.5;transform:translate3d(0,0,0) scale(.96)}to{opacity:.76;transform:translate3d(-10px,12px,0) scale(1.04)}}
+@media(max-width:700px){
+ .hero:before{right:-25%;top:-115px;width:330px;opacity:.52}
+ .hero:after{opacity:.45}
+ .field-sprig{left:-2%;right:auto;bottom:5%;width:74px;opacity:.34}
+ .now-card{background:#263a2e}
+}
+@media(prefers-reduced-motion:reduce){.hero:before{animation:none}.hero:after,.sun-wash{transition:none}}
+
+/* Forest cover: let the real photograph set the mood, while keeping copy legible. */
+.hero{min-height:min(900px,100svh);padding:112px 24px 68px;background-image:linear-gradient(90deg,rgba(14,24,17,.74) 0%,rgba(15,28,19,.48) 42%,rgba(15,28,19,.34) 100%),linear-gradient(0deg,rgba(12,20,14,.28),transparent 48%,rgba(12,20,14,.12)),url("assets/forest-trail.jpg");background-size:cover;background-position:center 51%;background-repeat:no-repeat}
+.hero:before{inset:0;left:0;right:0;top:0;bottom:0;width:auto;aspect-ratio:auto;border-radius:0;filter:none;opacity:.75;background:radial-gradient(ellipse at 20% 24%,rgba(247,215,153,.14),transparent 34%);mix-blend-mode:screen;animation:none}
+.hero:after{background:linear-gradient(112deg,transparent 30%,rgba(247,220,160,.07) 49%,transparent 67%);opacity:.54}
+.sun-wash{background:radial-gradient(ellipse at 30% 25%,rgba(255,222,158,.16),transparent 38%),radial-gradient(ellipse at 70% 57%,rgba(237,194,121,.08),transparent 35%);opacity:.64}
+.hero-copy{max-width:590px;padding:clamp(22px,3vw,34px);border:1px solid rgba(238,227,192,.15);border-radius:24px;background:linear-gradient(145deg,rgba(15,27,19,.47),rgba(15,27,19,.23));box-shadow:0 18px 60px rgba(7,15,9,.12);backdrop-filter:blur(2px)}
+.hero-wrap{grid-template-columns:.93fr 1.07fr;gap:clamp(28px,5vw,64px)}
+.poster{border-color:rgba(234,220,182,.52);box-shadow:0 30px 84px rgba(4,12,7,.42)}
+.poster:before{background:radial-gradient(ellipse at 75% 10%,rgba(255,224,159,.22),transparent 43%)}
+.poster img{filter:saturate(.87) sepia(.08) contrast(1.04)}
+.photo-credit{font-size:.68rem;color:#747867;white-space:nowrap}
+.photo-credit:hover{color:#566848;text-decoration:underline;text-underline-offset:3px}
+@media(max-width:980px){.hero{min-height:min(900px,100svh);padding:96px 20px 48px;background-position:52% center}.hero-wrap{grid-template-columns:.88fr 1.12fr;gap:clamp(20px,3vw,32px)}.hero-copy{max-width:none;padding:22px}.poster-frame{height:min(66vw,540px);min-height:340px}}
+@media(max-width:700px){.hero{min-height:unset;padding:98px 16px 48px;background-position:48% center}.hero-wrap{grid-template-columns:1fr;gap:24px}.hero-copy{padding:20px;border-radius:20px;background:rgba(15,27,19,.56)}.poster-frame{height:112vw;min-height:350px;max-height:500px}.field-sprig{opacity:.26}.footer-inner{flex-wrap:wrap}.photo-credit{white-space:normal}}
+@media(prefers-reduced-motion:reduce){.hero{background-attachment:scroll}}
+
+/* Keep the two hero phrases on intentional lines across screen sizes. */
+@media(min-width:981px){.hero-wrap{grid-template-columns:1fr 1fr;gap:clamp(28px,4vw,58px)}.hero-copy{max-width:none}}
+.hero h1{max-width:100%;font-size:clamp(3rem,4.25vw,4.4rem);line-height:1.16;letter-spacing:-.04em}
+.hero h1 .hero-title-main{display:block;color:#fff;font-size:1em;line-height:1.12;letter-spacing:-.035em;white-space:nowrap}
+.hero h1 em{white-space:nowrap;line-height:1.28}
+@media(max-width:980px){.hero-wrap{grid-template-columns:.88fr 1.12fr;gap:clamp(20px,3vw,32px)}.hero h1{font-size:clamp(2.75rem,6vw,3.25rem)}}
+@media(max-width:700px){.hero-wrap{grid-template-columns:1fr;gap:24px}.hero-copy{padding:20px}.poster-frame{order:0;height:112vw;min-height:350px;max-height:500px}.hero h1{font-size:clamp(2.5rem,10vw,3.4rem)}.hero h1 .hero-title-main,.hero h1 em{white-space:normal}.hero h1 em{font-size:.78em}}
+.hero{background-color:var(--cream)}
+.hero-fade{position:absolute;z-index:1;left:0;right:0;bottom:0;height:clamp(180px,28vh,260px);pointer-events:none;background:linear-gradient(180deg,rgba(240,240,235,0) 0%,rgba(17,29,20,.34) 36%,rgba(17,29,20,.08) 54%,rgba(240,240,235,.62) 82%,var(--cream) 100%)}
+@media(max-width:700px){.hero{padding-bottom:clamp(132px,25vh,188px)}.hero-fade{height:clamp(200px,30vh,270px);background:linear-gradient(180deg,rgba(240,240,235,0) 0%,rgba(17,29,20,.32) 34%,rgba(17,29,20,.06) 54%,rgba(240,240,235,.6) 82%,var(--cream) 100%)}}
+/* A compact navigation frame and a hero composition sized to the full viewport. */
+.nav{border-radius:10px}
+@media(max-width:700px){.nav{border-radius:9px}}
+@media(min-width:981px){.hero{min-height:100svh;padding-top:clamp(72px,9svh,108px);padding-bottom:clamp(120px,15svh,190px)}.poster-frame{height:min(66svh,720px);min-height:min(440px,calc(100svh - 210px));max-height:720px}}
+.poster{cursor:pointer;perspective:1400px;transition:filter .24s ease}
+.poster:focus-visible{outline:3px solid var(--yellow);outline-offset:5px}
+.poster:before,.poster:after{content:none!important}
+.poster-card{position:absolute;inset:0;border-radius:inherit;transform-style:preserve-3d;transform:rotateY(0deg);transition:transform .62s cubic-bezier(.22,.72,.2,1);will-change:transform}
+.poster-card.no-rotation-transition{transition:none!important}
+.poster-face{position:absolute;inset:0;overflow:hidden;border:1px solid rgba(234,220,182,.52);border-radius:inherit;background:#101511;box-shadow:0 30px 84px rgba(4,12,7,.42);backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.poster-face-dark{opacity:0;visibility:hidden}
+.poster-face img{display:block;width:100%;height:100%;object-fit:cover;transition:filter .24s ease;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.poster-face-light img{object-position:50% 20%;filter:saturate(.87) sepia(.08) contrast(1.04)}
+.poster-face:before,.poster-face:after{content:"";position:absolute;inset:0;pointer-events:none;z-index:1}
+.poster-face:before{background:radial-gradient(ellipse at 75% 10%,rgba(255,224,159,.22),transparent 43%);mix-blend-mode:screen}
+.poster-face:after{background:linear-gradient(180deg,rgba(18,29,22,.02) 32%,rgba(18,29,22,.1) 56%,rgba(12,20,15,.83) 100%)}
+.poster-face .poster-meta{z-index:2}
+.poster.is-dark .poster-face-light{opacity:0;visibility:hidden}
+.poster.is-dark .poster-face-dark{opacity:1;visibility:visible}
+.poster.flip-to-dark .poster-card,.poster.flip-to-light .poster-card{transform:rotateY(360deg)}
+.theme-wash{position:fixed;inset:0;z-index:89;background:#020303;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .18s ease,visibility 0s linear .18s}
+.theme-wash.active{opacity:.22;visibility:visible;transition:opacity .18s ease,visibility 0s}
+.nav,.hero-copy,.manifesto,.quote-card,.story-card,.event-card,.now,.now-card,.work-card,.snapshots,.snap,.contact,.contact-box,.social,footer{transition:background-color .24s ease,color .24s ease,border-color .24s ease,box-shadow .24s ease,transform .35s ease}
+body.dark-mode{--paper:#070908;--cream:#101310;--warm:#191e19;--ink:#e6e9e1;--muted:#a5aaa1;--line:rgba(226,232,220,.14);--navy:#050706;--navy-2:#101512;--yellow:#d8b45f;background:var(--paper);color:var(--ink);color-scheme:dark}
+body.dark-mode .nav{background:rgba(6,8,7,.95);border-color:rgba(225,232,218,.16);box-shadow:0 12px 38px rgba(0,0,0,.42)}
+body.dark-mode .navlinks{background-color:rgba(6,8,7,.98)}
+body.dark-mode .navlinks a{color:#d0d3ca}
+body.dark-mode .navlinks a.is-current,body.dark-mode .navlinks a:hover{background:rgba(255,255,255,.08);color:#f0d18b}
+body.dark-mode .hamb{color:#f1eee6}
+body.dark-mode .hero{background-color:var(--cream);background-image:linear-gradient(90deg,rgba(2,4,6,.58) 0%,rgba(3,5,7,.4) 46%,rgba(2,4,6,.5) 100%),linear-gradient(0deg,rgba(0,0,0,.36),transparent 48%,rgba(0,0,0,.16)),url("assets/dark-old-town.jpg");background-position:center,center,center 55%;background-size:cover}
+@media(max-width:700px){body.dark-mode .hero{background-position:center,center,68% 55%}}
+body.dark-mode .hero-copy{border-color:rgba(223,231,216,.16);background:linear-gradient(145deg,rgba(4,6,5,.78),rgba(7,10,8,.58));box-shadow:0 20px 70px rgba(0,0,0,.28)}
+body.dark-mode .hero-fade{background:linear-gradient(180deg,rgba(7,9,8,0) 0%,rgba(7,9,8,.48) 38%,rgba(7,9,8,.88) 84%,var(--cream) 100%)}
+body.dark-mode .poster{background:transparent;border-color:transparent;box-shadow:none}
+body.dark-mode .poster-face{border-color:rgba(223,231,216,.3)}
+body.dark-mode .poster .poster-face-light img{filter:saturate(.87) sepia(.08) contrast(1.04)}
+body.dark-mode .poster .poster-face-dark img{filter:brightness(1.08) saturate(.92) contrast(1.02);object-position:52% 16%}
+body.dark-mode .poster-face-dark:before{background:radial-gradient(ellipse at 72% 12%,rgba(235,213,160,.13),transparent 48%);mix-blend-mode:screen}
+body.dark-mode .poster-face-dark:after{background:linear-gradient(180deg,rgba(0,0,0,.02) 34%,rgba(0,0,0,.17) 62%,rgba(0,0,0,.78) 100%)}
+body.dark-mode .manifesto{background:radial-gradient(ellipse at 84% 0%,rgba(209,174,98,.08),transparent 34%),var(--cream)}
+body.dark-mode .section-label{color:#a5aa9e}
+body.dark-mode .section-title em,body.dark-mode .contact-box h2 em{color:#aab694}
+body.dark-mode .quote-card{background:#0b0e0c;border-color:var(--line)}
+body.dark-mode .story-card{background:#111512;border-color:var(--line);color:var(--ink)}
+body.dark-mode .story-card p,body.dark-mode .contact-box p{color:#afb4aa}
+body.dark-mode .story-card .mini-title{color:#a3a99c}
+body.dark-mode .principles span{background:#171c18;border-color:var(--line);color:#d7dbd1}
+body.dark-mode .timeline:before{background:rgba(226,232,220,.12)}
+body.dark-mode .event-dot{background:#101411;border-color:var(--line);color:#d5d9ce}
+body.dark-mode .event.active .event-dot{background:#d8b45f;border-color:#d8b45f;color:#10130f}
+body.dark-mode .event-card,body.dark-mode .event-card.alt{background:#0f1310;border-color:var(--line)}
+body.dark-mode .event-meta,body.dark-mode .event-copy p{color:#b1b6ac}
+body.dark-mode .event-copy .learning{color:#c6cbbf;border-color:var(--line)}
+body.dark-mode .event-copy .learning b{color:#eff0e8}
+body.dark-mode .event-tags span{background:#171c18;border-color:var(--line);color:#cbd0c5}
+body.dark-mode .collage-photo{background:#111512}
+body.dark-mode .now{background:#050706}
+body.dark-mode .now-card{background:#0d120f;border-color:var(--line)}
+body.dark-mode .now-cover{background:#080a09}
+body.dark-mode .work-card{background:#0f1310;border-color:var(--line)}
+body.dark-mode .work-image{background:#171b17}
+body.dark-mode .work-body p{color:#b2b7ad}
+body.dark-mode .work-meta{color:#a7ada2}
+body.dark-mode .tab{background:#111512;color:#d1d6cb;border-color:var(--line)}
+body.dark-mode .tab.active,body.dark-mode .tab:hover{background:#d8b45f;color:#10130f;border-color:#d8b45f}
+body.dark-mode .snapshots{background:#0c100d}
+body.dark-mode .snap{background:#151a16;border-color:var(--line)}
+body.dark-mode .interest-note{color:#a9afa3}
+body.dark-mode .contact{background:var(--paper)}
+body.dark-mode .social{background:#101411;border-color:var(--line);color:#e4e7df}
+body.dark-mode .social:hover{background:#d8b45f;color:#0b0e0c}
+body.dark-mode footer{background:var(--paper);color:#969d92}
+body.dark-mode .photo-credit{color:#a6ab9f}
+@media(prefers-reduced-motion:reduce){.poster,.poster-card,.theme-wash,.poster-face img{transition:none!important}}
 </style>
 </head>
 <body>
@@ -264,25 +445,37 @@ body:before{display:none}
   </div>
   <button class="hamb" id="hamb" aria-label="เปิดเมนู">☰</button>
 </nav>
+<div class="theme-wash" id="themeWash" aria-hidden="true"></div>
 
 <main id="top">
 <section class="hero">
+  <div class="sun-wash" aria-hidden="true"></div>
   <div class="hero-wrap">
     <div class="hero-copy reveal">
-      <div class="eyebrow">แฟ้มผลงาน · 2026</div>
+      <div class="eyebrow">แฟ้มผลงาน</div>
       <p class="hero-kicker">นันธวัฒน์ คมคาย · เต้</p>
-      <h1>เต็มที่กับชีวิต<em>เรียนรู้จากทุกก้าว</em></h1>
+      <h1><span class="hero-title-main">เต็มที่กับชีวิต</span><em>เรียนรู้จากทุกก้าว</em></h1>
       <p class="hero-note">ผมสนุกกับเทคโนโลยี ชอบลองสิ่งใหม่ และเติบโตจากประสบการณ์จริง</p>
       <div class="hero-links"><a class="btn primary" href="#journey">ดูเส้นทางของผม ↓</a><a class="btn ghost" href="#contact">ติดต่อ ↗</a></div>
     </div>
     <div class="poster-frame reveal" data-tilt>
-      <div class="poster" data-lightbox data-src="assets/hero-portrait.jpg" data-caption="Nanthawat Khomkhai — 2026">
-        <img src="assets/hero-portrait.jpg" alt="Nanthawat Khomkhai portrait" loading="eager">
-        <div class="poster-meta"><div><p>นักศึกษาทุน Tech Talent · มหาวิทยาลัยกรุงเทพ</p></div><div class="poster-side">2026</div></div>
+      <div class="poster" data-theme-toggle role="button" tabindex="0" aria-label="สลับโหมดการแสดงผล" aria-pressed="false">
+        <div class="poster-card">
+          <div class="poster-face poster-face-light" data-poster-face="light">
+            <img id="heroLightPortrait" src="assets/hero-portrait.jpg" alt="" aria-hidden="true" loading="eager">
+            <div class="poster-meta" aria-hidden="true"><div><p>นักศึกษาทุน Tech Talent · มหาวิทยาลัยกรุงเทพ</p></div></div>
+          </div>
+          <div class="poster-face poster-face-dark" data-poster-face="dark" aria-hidden="true">
+            <img id="heroDarkPortrait" src="assets/hero-dark.png" alt="" aria-hidden="true" loading="eager">
+            <div class="poster-meta" aria-hidden="true"><div><p>นักศึกษาทุน Tech Talent · มหาวิทยาลัยกรุงเทพ</p></div></div>
+          </div>
+        </div>
       </div>
+      <img class="field-sprig" src="assets/field-sprig.svg" alt="" aria-hidden="true">
       
     </div>
   </div>
+  <div class="hero-fade" aria-hidden="true"></div>
 </section>
 
 <section class="section manifesto" id="story">
@@ -499,11 +692,51 @@ body:before{display:none}
   </div>
 </section>
 </main>
-<footer><div class="footer-inner"><span>© 2026 Nanthawat Khomkhai</span><span>นันธวัฒน์ คมคาย · Portfolio 2026</span></div></footer>
+<footer><div class="footer-inner"><span>© Nanthawat Khomkhai</span><span>นันธวัฒน์ คมคาย · Portfolio 2026</span></div></footer>
 
 <div class="lightbox" id="lightbox" aria-hidden="true"><button class="lb-close" id="lbClose" aria-label="ปิด">×</button><figure><img id="lbImage" alt=""><figcaption id="lbCaption"></figcaption></figure></div>
 <script>
 const nav=document.getElementById('nav'); document.getElementById('hamb').addEventListener('click',()=>nav.classList.toggle('menu-open')); document.querySelectorAll('.navlinks a').forEach(a=>a.addEventListener('click',()=>nav.classList.remove('menu-open')));
+const themeCard=document.querySelector('[data-theme-toggle]'),themeFlip=themeCard.querySelector('.poster-card'),themeWash=document.getElementById('themeWash'),lightFace=themeCard.querySelector('[data-poster-face="light"]'),darkFace=themeCard.querySelector('[data-poster-face="dark"]');
+const savedDarkMode=localStorage.getItem('ntw-portfolio-theme')==='dark';
+document.body.classList.toggle('dark-mode',savedDarkMode);themeCard.classList.toggle('is-dark',savedDarkMode);themeCard.setAttribute('aria-pressed',String(savedDarkMode));lightFace.setAttribute('aria-hidden',String(savedDarkMode));darkFace.setAttribute('aria-hidden',String(!savedDarkMode));
+let themeSwitching=false;
+function togglePortfolioTheme(){
+  if(themeSwitching)return;
+  themeSwitching=true;
+  const enableDark=!document.body.classList.contains('dark-mode'),reducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let modeChanged=false,midpointTimer,finishTimer;
+  const directionClass=enableDark?'flip-to-dark':'flip-to-light';
+  function applyMode(){
+    if(modeChanged)return;
+    modeChanged=true;
+    document.body.classList.toggle('dark-mode',enableDark);
+    themeCard.classList.toggle('is-dark',enableDark);
+    themeCard.setAttribute('aria-pressed',String(enableDark));
+    lightFace.setAttribute('aria-hidden',String(enableDark));
+    darkFace.setAttribute('aria-hidden',String(!enableDark));
+    localStorage.setItem('ntw-portfolio-theme',enableDark?'dark':'light');
+  }
+  function finishFlip(){
+    clearTimeout(midpointTimer);clearTimeout(finishTimer);
+    if(!modeChanged)applyMode();
+    themeFlip.removeEventListener('transitionend',onFlipEnd);
+    themeFlip.classList.add('no-rotation-transition');
+    themeCard.classList.remove('is-flipping','flip-to-dark','flip-to-light');
+    requestAnimationFrame(()=>themeFlip.classList.remove('no-rotation-transition'));
+    themeWash.classList.remove('active');
+    themeSwitching=false;
+  }
+  function onFlipEnd(event){if(event.target===themeFlip&&event.propertyName==='transform')finishFlip()}
+  if(reducedMotion){themeWash.classList.add('active');applyMode();finishFlip();return}
+  themeFlip.addEventListener('transitionend',onFlipEnd);
+  themeCard.classList.add('is-flipping',directionClass);
+  themeWash.classList.add('active');
+  midpointTimer=setTimeout(applyMode,310);
+  finishTimer=setTimeout(finishFlip,790);
+}
+themeCard.addEventListener('click',togglePortfolioTheme);
+themeCard.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();togglePortfolioTheme()}});
 const navLinks=[...document.querySelectorAll('.navlinks a[href^="#"]')],navSections=navLinks.map(a=>document.querySelector(a.getAttribute('href'))).filter(Boolean);
 function updateActiveNav(){if(!navSections.length)return;const marker=innerHeight*.42;let current=null;navSections.forEach(section=>{if(section.getBoundingClientRect().top<=marker)current=section});navLinks.forEach(link=>{const active=!!current&&link.getAttribute('href')==='#'+current.id;link.classList.toggle('is-current',active);if(active)link.setAttribute('aria-current','location');else link.removeAttribute('aria-current')})}
 document.querySelectorAll('.manifesto-grid,.timeline,.now-grid,.work-grid,.snap-row,.socials').forEach(group=>{[...group.children].filter(el=>el.classList.contains('reveal')).forEach((el,index)=>el.style.setProperty('--reveal-delay',`${(index%3)*75}ms`))});
@@ -513,6 +746,7 @@ function updateTimeline(){updateActiveNav();if(!timeline)return;const r=timeline
 const lb=document.getElementById('lightbox'), lbImg=document.getElementById('lbImage'), lbCap=document.getElementById('lbCaption');
 function openLb(el){lbImg.src=el.dataset.src;lbCap.textContent=el.dataset.caption||'';lb.classList.add('open');lb.setAttribute('aria-hidden','false');document.body.style.overflow='hidden'} function closeLb(){lb.classList.remove('open');lb.setAttribute('aria-hidden','true');document.body.style.overflow=''} document.querySelectorAll('[data-lightbox]').forEach(el=>el.addEventListener('click',e=>{e.stopPropagation();openLb(el)}));document.getElementById('lbClose').addEventListener('click',closeLb);lb.addEventListener('click',e=>{if(e.target===lb)closeLb()});document.addEventListener('keydown',e=>{if(e.key==='Escape')closeLb()});
 const tilt=document.querySelector('[data-tilt]'); if(tilt&&matchMedia('(pointer:fine)').matches){tilt.addEventListener('mousemove',e=>{const r=tilt.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;tilt.style.transform=`perspective(1200px) rotateY(${x*2.4}deg) rotateX(${y*-2.4}deg)`});tilt.addEventListener('mouseleave',()=>tilt.style.transform='')}
+const sunHero=document.querySelector('.hero'); if(sunHero&&matchMedia('(pointer:fine)').matches&&!matchMedia('(prefers-reduced-motion: reduce)').matches){sunHero.addEventListener('pointermove',e=>{const r=sunHero.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;sunHero.style.setProperty('--sun-dx',`${(x*54).toFixed(1)}px`);sunHero.style.setProperty('--sun-dy',`${(y*34).toFixed(1)}px`)});sunHero.addEventListener('pointerleave',()=>{sunHero.style.setProperty('--sun-dx','0px');sunHero.style.setProperty('--sun-dy','0px')})}
 const tabs=[...document.querySelectorAll('.tab')], cards=[...document.querySelectorAll('.work-card')]; tabs.forEach(tab=>tab.addEventListener('click',()=>{tabs.forEach(t=>t.classList.remove('active'));tab.classList.add('active');const f=tab.dataset.filter;cards.forEach((card,index)=>{clearTimeout(card._filterTimer);const show=f==='all'||card.dataset.type===f;if(show){card.hidden=false;card.classList.remove('filter-out','filter-in');card.style.setProperty('--filter-delay',`${(index%3)*55}ms`);requestAnimationFrame(()=>{card.classList.add('filter-in');card.style.animationDelay=card.style.getPropertyValue('--filter-delay');setTimeout(()=>{card.classList.remove('filter-in');card.style.animationDelay=''},460)})}else{card.classList.remove('filter-in');card.classList.add('filter-out');card._filterTimer=setTimeout(()=>{if(card.classList.contains('filter-out'))card.hidden=true},230)}})}));
 </script>
 </body></html>
