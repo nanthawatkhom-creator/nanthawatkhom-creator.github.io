@@ -365,11 +365,10 @@ footer{background:var(--paper);color:#737769}
 .nav{border-radius:10px}
 @media(max-width:700px){.nav{border-radius:9px}}
 @media(min-width:981px){.hero{min-height:100svh;padding-top:clamp(72px,9svh,108px);padding-bottom:clamp(120px,15svh,190px)}.poster-frame{height:min(66svh,720px);min-height:min(440px,calc(100svh - 210px));max-height:720px}}
-.poster{cursor:pointer;perspective:1400px;transition:filter .24s ease}
+.poster{cursor:pointer}
 .poster:focus-visible{outline:3px solid var(--yellow);outline-offset:5px}
 .poster:before,.poster:after{content:none!important}
-.poster-card{position:absolute;inset:0;border-radius:inherit;transform-style:preserve-3d;transform:rotateY(0deg);transition:transform .62s cubic-bezier(.22,.72,.2,1);will-change:transform}
-.poster-card.no-rotation-transition{transition:none!important}
+.poster-card{position:absolute;inset:0;border-radius:inherit}
 .poster-face{position:absolute;inset:0;overflow:hidden;border:1px solid rgba(234,220,182,.52);border-radius:inherit;background:#101511;box-shadow:0 30px 84px rgba(4,12,7,.42);backface-visibility:hidden;-webkit-backface-visibility:hidden}
 .poster-face-dark{opacity:0;visibility:hidden}
 .poster-face img{display:block;width:100%;height:100%;object-fit:cover;transition:filter .24s ease;backface-visibility:hidden;-webkit-backface-visibility:hidden}
@@ -380,9 +379,7 @@ footer{background:var(--paper);color:#737769}
 .poster-face .poster-meta{z-index:2}
 .poster.is-dark .poster-face-light{opacity:0;visibility:hidden}
 .poster.is-dark .poster-face-dark{opacity:1;visibility:visible}
-.poster.flip-to-dark .poster-card,.poster.flip-to-light .poster-card{transform:rotateY(360deg)}
-.theme-wash{position:fixed;inset:0;z-index:89;background:#020303;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .18s ease,visibility 0s linear .18s}
-.theme-wash.active{opacity:.22;visibility:visible;transition:opacity .18s ease,visibility 0s}
+.theme-switching,.theme-switching *{transition:none!important}
 .nav,.hero-copy,.manifesto,.quote-card,.story-card,.event-card,.now,.now-card,.work-card,.snapshots,.snap,.contact,.contact-box,.social,footer{transition:background-color .24s ease,color .24s ease,border-color .24s ease,box-shadow .24s ease,transform .35s ease}
 body.dark-mode{--paper:#070908;--cream:#101310;--warm:#191e19;--ink:#e6e9e1;--muted:#a5aaa1;--line:rgba(226,232,220,.14);--navy:#050706;--navy-2:#101512;--yellow:#d8b45f;background:var(--paper);color:var(--ink);color-scheme:dark}
 body.dark-mode .nav{background:rgba(6,8,7,.95);border-color:rgba(225,232,218,.16);box-shadow:0 12px 38px rgba(0,0,0,.42)}
@@ -434,7 +431,7 @@ body.dark-mode .social{background:#101411;border-color:var(--line);color:#e4e7df
 body.dark-mode .social:hover{background:#d8b45f;color:#0b0e0c}
 body.dark-mode footer{background:var(--paper);color:#969d92}
 body.dark-mode .photo-credit{color:#a6ab9f}
-@media(prefers-reduced-motion:reduce){.poster,.poster-card,.theme-wash,.poster-face img{transition:none!important}}
+@media(prefers-reduced-motion:reduce){.poster-face img{transition:none!important}}
 
 /* Keep all four current-role cards on one row on desktop screens. */
 @media(min-width:981px){
@@ -443,23 +440,32 @@ body.dark-mode .photo-credit{color:#a6ab9f}
  .now-grid .now-card.wide .now-cover{height:clamp(210px,18vw,300px);min-height:0}
  .now-grid .now-card.wide .now-body{display:block;padding:clamp(14px,1.35vw,19px)}
  .now-grid .now-top{align-items:flex-start;flex-wrap:wrap;gap:8px}
- .now-grid .now-id{margin-left:auto;text-align:right}
- .now-grid .now-body h3{font-size:clamp(1.1rem,1.25vw,1.35rem);line-height:1.2;letter-spacing:-.02em}
- .now-grid .now-body p{font-size:.86rem}
+.now-grid .now-id{margin-left:auto;text-align:right}
+.now-grid .now-body h3{font-size:clamp(1.1rem,1.25vw,1.35rem);line-height:1.2;letter-spacing:-.02em}
+.now-grid .now-body p{font-size:.86rem}
 }
 body.dark-mode .hero .field-sprig{display:none}
+.language-switch{display:inline-flex;align-items:center;gap:2px;flex:none;padding:3px;border:1px solid rgba(255,255,255,.16);border-radius:999px;background:rgba(255,255,255,.045)}
+.language-switch button{min-width:35px;height:28px;padding:0 8px;border:0;border-radius:999px;background:transparent;color:#cfd8e4;font:600 .68rem/1 var(--sans);cursor:pointer;transition:background .2s ease,color .2s ease}
+.language-switch button:hover{background:rgba(255,255,255,.1);color:#fff}
+.language-switch button[aria-pressed="true"]{background:var(--yellow);color:var(--navy)}
+.language-switch button:focus-visible{outline:2px solid var(--yellow);outline-offset:2px}
+@media(max-width:700px){.language-switch{margin-left:auto;margin-right:8px}.language-switch button{min-width:32px;height:28px}.nav{padding-left:12px}.brand{font-size:.72rem}}
+@media(min-width:981px){body.lang-en .hero h1{font-size:clamp(2.8rem,3.8vw,4rem)}body.lang-en .hero h1 em{font-size:.76em;white-space:normal}}
+@media(max-width:980px){body.lang-en .hero h1{font-size:clamp(2.5rem,5.2vw,3.2rem)}}
+@media(max-width:700px){body.lang-en .hero h1{font-size:clamp(2.35rem,9vw,3rem)}body.lang-en .hero h1 em{white-space:normal}}
+body.lang-en .event-media:after{content:"Click to enlarge"}
 </style>
 </head>
 <body>
 <nav class="nav" id="nav">
   <a class="brand" href="#top"><span style="width:10px;height:10px;border-radius:50%;background:var(--yellow);display:inline-block"></span> NANTHAWAT <b>/ NTW</b></a>
+  <div class="language-switch" role="group" aria-label="เลือกภาษา"><button type="button" data-language-option="th" aria-pressed="true">TH</button><button type="button" data-language-option="en" aria-pressed="false">EN</button></div>
   <div class="navlinks">
     <a href="#story">เกี่ยวกับผม</a><a href="#journey">เส้นทาง</a><a href="#now">ปัจจุบัน</a><a href="#work">ผลงาน</a><a href="#contact">ติดต่อ</a>
   </div>
   <button class="hamb" id="hamb" aria-label="เปิดเมนู">☰</button>
 </nav>
-<div class="theme-wash" id="themeWash" aria-hidden="true"></div>
-
 <main id="top">
 <section class="hero">
   <div class="sun-wash" aria-hidden="true"></div>
@@ -710,43 +716,19 @@ body.dark-mode .hero .field-sprig{display:none}
 <div class="lightbox" id="lightbox" aria-hidden="true"><button class="lb-close" id="lbClose" aria-label="ปิด">×</button><figure><img id="lbImage" alt=""><figcaption id="lbCaption"></figcaption></figure></div>
 <script>
 const nav=document.getElementById('nav'); document.getElementById('hamb').addEventListener('click',()=>nav.classList.toggle('menu-open')); document.querySelectorAll('.navlinks a').forEach(a=>a.addEventListener('click',()=>nav.classList.remove('menu-open')));
-const themeCard=document.querySelector('[data-theme-toggle]'),themeFlip=themeCard.querySelector('.poster-card'),themeWash=document.getElementById('themeWash'),lightFace=themeCard.querySelector('[data-poster-face="light"]'),darkFace=themeCard.querySelector('[data-poster-face="dark"]');
+const themeCard=document.querySelector('[data-theme-toggle]'),lightFace=themeCard.querySelector('[data-poster-face="light"]'),darkFace=themeCard.querySelector('[data-poster-face="dark"]');
 const savedDarkMode=localStorage.getItem('ntw-portfolio-theme')==='dark';
 document.body.classList.toggle('dark-mode',savedDarkMode);themeCard.classList.toggle('is-dark',savedDarkMode);themeCard.setAttribute('aria-pressed',String(savedDarkMode));lightFace.setAttribute('aria-hidden',String(savedDarkMode));darkFace.setAttribute('aria-hidden',String(!savedDarkMode));
-let themeSwitching=false;
 function togglePortfolioTheme(){
-  if(themeSwitching)return;
-  themeSwitching=true;
-  const enableDark=!document.body.classList.contains('dark-mode'),reducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let modeChanged=false,midpointTimer,finishTimer;
-  const directionClass=enableDark?'flip-to-dark':'flip-to-light';
-  function applyMode(){
-    if(modeChanged)return;
-    modeChanged=true;
-    document.body.classList.toggle('dark-mode',enableDark);
-    themeCard.classList.toggle('is-dark',enableDark);
-    themeCard.setAttribute('aria-pressed',String(enableDark));
-    lightFace.setAttribute('aria-hidden',String(enableDark));
-    darkFace.setAttribute('aria-hidden',String(!enableDark));
-    localStorage.setItem('ntw-portfolio-theme',enableDark?'dark':'light');
-  }
-  function finishFlip(){
-    clearTimeout(midpointTimer);clearTimeout(finishTimer);
-    if(!modeChanged)applyMode();
-    themeFlip.removeEventListener('transitionend',onFlipEnd);
-    themeFlip.classList.add('no-rotation-transition');
-    themeCard.classList.remove('is-flipping','flip-to-dark','flip-to-light');
-    requestAnimationFrame(()=>themeFlip.classList.remove('no-rotation-transition'));
-    themeWash.classList.remove('active');
-    themeSwitching=false;
-  }
-  function onFlipEnd(event){if(event.target===themeFlip&&event.propertyName==='transform')finishFlip()}
-  if(reducedMotion){themeWash.classList.add('active');applyMode();finishFlip();return}
-  themeFlip.addEventListener('transitionend',onFlipEnd);
-  themeCard.classList.add('is-flipping',directionClass);
-  themeWash.classList.add('active');
-  midpointTimer=setTimeout(applyMode,310);
-  finishTimer=setTimeout(finishFlip,790);
+  const enableDark=!document.body.classList.contains('dark-mode');
+  document.body.classList.add('theme-switching');
+  document.body.classList.toggle('dark-mode',enableDark);
+  themeCard.classList.toggle('is-dark',enableDark);
+  themeCard.setAttribute('aria-pressed',String(enableDark));
+  lightFace.setAttribute('aria-hidden',String(enableDark));
+  darkFace.setAttribute('aria-hidden',String(!enableDark));
+  localStorage.setItem('ntw-portfolio-theme',enableDark?'dark':'light');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>document.body.classList.remove('theme-switching')));
 }
 themeCard.addEventListener('click',togglePortfolioTheme);
 themeCard.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();togglePortfolioTheme()}});
@@ -761,5 +743,151 @@ function openLb(el){lbImg.src=el.dataset.src;lbCap.textContent=el.dataset.captio
 const tilt=document.querySelector('[data-tilt]'); if(tilt&&matchMedia('(pointer:fine)').matches){tilt.addEventListener('mousemove',e=>{const r=tilt.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;tilt.style.transform=`perspective(1200px) rotateY(${x*2.4}deg) rotateX(${y*-2.4}deg)`});tilt.addEventListener('mouseleave',()=>tilt.style.transform='')}
 const sunHero=document.querySelector('.hero'); if(sunHero&&matchMedia('(pointer:fine)').matches&&!matchMedia('(prefers-reduced-motion: reduce)').matches){sunHero.addEventListener('pointermove',e=>{const r=sunHero.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;sunHero.style.setProperty('--sun-dx',`${(x*54).toFixed(1)}px`);sunHero.style.setProperty('--sun-dy',`${(y*34).toFixed(1)}px`)});sunHero.addEventListener('pointerleave',()=>{sunHero.style.setProperty('--sun-dx','0px');sunHero.style.setProperty('--sun-dy','0px')})}
 const tabs=[...document.querySelectorAll('.tab')], cards=[...document.querySelectorAll('.work-card')]; tabs.forEach(tab=>tab.addEventListener('click',()=>{tabs.forEach(t=>t.classList.remove('active'));tab.classList.add('active');const f=tab.dataset.filter;cards.forEach((card,index)=>{clearTimeout(card._filterTimer);const show=f==='all'||card.dataset.type===f;if(show){card.hidden=false;card.classList.remove('filter-out','filter-in');card.style.setProperty('--filter-delay',`${(index%3)*55}ms`);requestAnimationFrame(()=>{card.classList.add('filter-in');card.style.animationDelay=card.style.getPropertyValue('--filter-delay');setTimeout(()=>{card.classList.remove('filter-in');card.style.animationDelay=''},460)})}else{card.classList.remove('filter-in');card.classList.add('filter-out');card._filterTimer=setTimeout(()=>{if(card.classList.contains('filter-out'))card.hidden=true},230)}})}));
+
+const englishCopy={
+  'เกี่ยวกับผม':'About me','เส้นทาง':'Journey','ปัจจุบัน':'Now','ผลงาน':'Work','ติดต่อ':'Contact',
+  'เลือกภาษา':'Choose language','เปิดเมนู':'Open menu','ปิดเมนู':'Close menu','ปิด':'Close',
+  'แฟ้มผลงาน':'Portfolio','นันธวัฒน์ คมคาย · เต้':'Nanthawat Khomkhai · Tae',
+  'เต็มที่กับชีวิต':'Live fully','เรียนรู้จากทุกก้าว':'Learn from every step',
+  'ผมสนุกกับเทคโนโลยี ชอบลองสิ่งใหม่ และเติบโตจากประสบการณ์จริง':'I enjoy technology, trying new things, and growing through real-world experience.',
+  'ดูเส้นทางของผม ↓':'Explore my journey ↓','ติดต่อ ↗':'Contact ↗',
+  'นักศึกษาทุน Tech Talent · มหาวิทยาลัยกรุงเทพ':'Tech Talent Scholar · Bangkok University',
+  'เรียนรู้ด้วย':'Learn by','การลงมือทำ':'doing','ด้วยการลงมือทำ':'by doing','จุดเริ่มต้น':'Where it began',
+  '“ผมชอบเรียนรู้':'“I love learning','ประสบการณ์จากงาน กิจกรรม และโปรเจกต์ช่วยให้ผมรู้จักตัวเองมากขึ้น':'Work, activities, and projects have helped me learn more about myself.',
+  'ประวัติโดยย่อ':'At a glance','นักศึกษาที่สนุกกับเทคโนโลยี':'A student who enjoys technology',
+  'กำลังศึกษาอยู่ชั้นปีที่ 2 ที่มหาวิทยาลัยกรุงเทพ คณะเทคโนโลยีสารสนเทศและนวัตกรรม ได้รับทุน Tech Talent Scholarship 100%':'I am a second-year student at Bangkok University’s School of Information Technology and Innovation, supported by a 100% Tech Talent Scholarship.',
+  'เคยอยู่ทีมสารสนเทศของวิทยาลัย 3 ปี ทำงานบริการที่ GGBISTRO และมีประสบการณ์ IT Support กับ Graphic Design ที่ BEAUTY WORLD ระหว่างเรียน ปวช. 2–3 ปัจจุบันยังสนุกกับการเรียนรู้เทคโนโลยีใหม่ ๆ':'I spent three years on my college IT team, worked in hospitality at GGBISTRO, and gained IT support and graphic design experience at BEAUTY WORLD during vocational years 2–3. I still enjoy exploring new technology.',
+  'อยากรู้อยากลอง':'Curious','สร้างสรรค์':'Creative','ทำงานกับผู้คน':'People person',
+  'ประสบการณ์':'Experience','ชีวิต':'Life','ปวช.':'Vocational',
+  'ตลอด 3 ปี · วิทยาลัยเทคโนโลยีสันตพล':'3 years · Santapol Technological College',
+  'อาสาสมัครทีมสารสนเทศ':'IT Team Volunteer',
+  'ร่วมเป็นอาสาสมัครในทีมสารสนเทศตลอดช่วงประกาศนียบัตรวิชาชีพ ทำหน้าที่ถ่ายภาพและผลิตสื่อประชาสัมพันธ์ ทั้งภาพ เสียง และวิดีโอ เพื่อสื่อสารกิจกรรมของวิทยาลัย':'I volunteered with the college IT team throughout vocational school, taking photos and producing promotional media in print, audio, and video for campus events.',
+  'สิ่งที่ได้ลงมือทำ':'What I did','ถ่ายภาพและวิดีโอ · ผลิตสื่อประชาสัมพันธ์ · สนับสนุนกิจกรรม':'Photography & video · Promotional media · Event support',
+  'อาสาสมัครทีมสารสนเทศ วิทยาลัยเทคโนโลยีสันตพล':'IT team volunteer at Santapol Technological College',
+  'อาสาสมัครถ่ายภาพและทำสื่อประชาสัมพันธ์ให้กิจกรรมของวิทยาลัย':'Photographing events and creating promotional media for the college',
+  'ม.ค. – พ.ย. 2023 · GGBISTRO':'Jan–Nov 2023 · GGBISTRO','งานแรกที่ GGBISTRO':'My first job at GGBISTRO',
+  'ทำงานช่วงปิดเทอม ปวช. 2 ในบทบาทบาริสต้า บาร์เทนเดอร์ และพนักงานเสิร์ฟที่ GGBISTRO บ้านจั่น จังหวัดอุดรธานี':'During the break in vocational year 2, I worked as a barista, bartender, and server at GGBISTRO in Ban Chan, Udon Thani.',
+  'ทักษะที่ได้':'Skills gained','บริการลูกค้า · ทำงานเป็นทีม · ความรับผิดชอบ':'Customer service · Teamwork · Responsibility',
+  'ทำงานหลังเคาน์เตอร์ที่ GGBISTRO':'Working behind the counter at GGBISTRO','บรรยากาศการทำงานที่ GGBISTRO':'The atmosphere at GGBISTRO','ช่วงเวลาทำงานที่ GGBISTRO':'A moment at work at GGBISTRO',
+  '2023 · National Vocational Skills 2566':'2023 · National Vocational Skills Competition',
+  'เหรียญทองทักษะวิชาชีพ':'Gold Medal in Vocational Skills',
+  'แข่งขันด้านเทคโนโลยีสารสนเทศและคอมพิวเตอร์ ในงานทักษะวิชาชีพระดับชาติ และได้รับเหรียญทอง':'Won a gold medal in Information Technology and Computer Skills at the national vocational skills competition.',
+  'ผลการแข่งขัน':'Competition result','หมวดเทคโนโลยีสารสนเทศและคอมพิวเตอร์ · เหรียญทอง':'Information Technology & Computer Skills · Gold medal',
+  'การแข่งขันทักษะวิชาชีพระดับชาติ ประจำปี 2566':'National Vocational Skills Competition · 2023','การแข่งขันทักษะวิชาชีพระดับชาติ ปี 2566 ที่วิทยาลัยเทคโนโลยีบึงโขงหลง':'National Vocational Skills Competition 2023 at Bueng Khong Long Technological College',
+  'ฝึกงานด้าน Graphic Design และหนังสือรับรองจาก BEAUTY WORLD':'Graphic design internship and certificate from BEAUTY WORLD',
+  'ฝึกงานที่ BEAUTY WORLD ขณะใช้คอมพิวเตอร์ พร้อมหนังสือรับรอง':'Interning at BEAUTY WORLD with a computer and certificate',
+  'ช่วง ปวช. 2–3 · BEAUTY WORLD':'Vocational years 2–3 · BEAUTY WORLD','IT Support และ Graphic Design':'IT Support & Graphic Design',
+  'ฝึกงานด้าน IT Support และ Graphic Design ที่ BEAUTY WORLD อุดรธานี ช่วง ปวช. 2 ตั้งแต่มกราคมถึงพฤศจิกายน 2024 และกลับมาทำงานช่วงปิดเทอมปี 2026':'I interned in IT support and graphic design at BEAUTY WORLD in Udon Thani from January to November 2024, then returned to work during the 2026 break.',
+  'สนับสนุน IT · สื่อสารด้วยภาพ · ทำงานตามโจทย์จริง':'IT support · Visual communication · Real-world briefs',
+  '2024 · National Software Contest ครั้งที่ 26':'2024 · 26th National Software Contest','พัฒนาเกม “บ้านเฮา”':'Developed the game “BANHAO”',
+  'รับหน้าที่เป็นนักพัฒนาและหัวหน้าทีมโปรเจกต์ โดยทีมผ่านเข้าสู่รอบชิงชนะเลิศ':'I served as the developer and project lead, guiding the team to the finals.',
+  'บทบาท':'Role','เกมบ้านเฮา ผลงานเข้าร่วม National Software Contest':'BANHAO, entered in the National Software Contest',
+  'ภาพเกมบ้านเฮาและทีมพัฒนา สำหรับการประกวด NSC':'BANHAO gameplay and development team for the NSC competition',
+  '2024 · National Vocational Skills 2567':'2024 · National Vocational Skills Competition',
+  'เหรียญทองนวัตกรรมซอฟต์แวร์':'Gold Medal in Software Innovation',
+  'แข่งขันหมวดนวัตกรรมซอฟต์แวร์และระบบสมองกลฝังตัว ระดับ ปวช. และได้รับเหรียญทอง':'Won a gold medal in Software Innovation and Embedded Systems at the vocational level.',
+  'Software Innovation & Embedded Systems · เหรียญทอง':'Software Innovation & Embedded Systems · Gold medal',
+  'การแข่งขัน National Vocational Skills 2567':'National Vocational Skills Competition · 2024',
+  'จัดแสดงผลงานนวัตกรรมซอฟต์แวร์ในการแข่งขันทักษะวิชาชีพ 2567':'Presenting software innovation at the 2024 vocational skills competition',
+  '2025 · มหาวิทยาลัยกรุงเทพ':'2025 · Bangkok University','ได้รับทุน Tech Talent Scholarship 100% และเริ่มเข้าร่วมกิจกรรมและทำงานร่วมกับเพื่อนนอกห้องเรียน':'I received a 100% Tech Talent Scholarship and began joining activities and collaborating with classmates beyond the classroom.',
+  'สิ่งที่ได้จากทุน':'Scholarship impact','ทุนการศึกษา 100% · เริ่มต้นเส้นทางในมหาวิทยาลัย':'Full tuition scholarship · The start of my university journey',
+  'วิดีโอทุน Tech Talent จากมหาวิทยาลัยกรุงเทพ':'Bangkok University Tech Talent Scholarship video','เปิดคลิปบน Facebook ↗':'Watch on Facebook ↗',
+  'ทีมงาน Staff BU ProCamp 2025':'BU ProCamp 2025 Staff','ทีมงานและผู้เข้าร่วมกิจกรรม BU ProCamp 2025':'BU ProCamp 2025 staff and participants',
+  'ร่วมเป็นทีมงานกิจกรรม BU ProCamp 2025 สนับสนุนคณาจารย์และดูแลนักเรียนระดับมัธยมศึกษาที่เข้าร่วม พร้อมให้คำแนะนำด้านการออกแบบและพัฒนาบอร์ดเกมเบื้องต้น':'I supported faculty and welcomed high school participants at BU ProCamp 2025, sharing basic guidance on board game design and development.',
+  'สนับสนุนกิจกรรมการเรียนรู้ · ดูแลผู้เข้าร่วม · ให้คำแนะนำด้านเกม':'Learning activities · Participant support · Game design guidance',
+  '23 ส.ค. 2025 · Thailand Game Festival (TGF)':'Aug 23, 2025 · Thailand Game Festival (TGF)',
+  'นำเสนอเกม BANHAO':'Presenting BANHAO','นำเสนอผลงานเกม BANHAO และ Pitch Deck บนเวที Thailand Game Festival เพื่อพัฒนาทักษะการสื่อสาร การนำเสนอ และการต่อยอดแนวคิดเกมเชิงธุรกิจ':'I presented BANHAO and its pitch deck at Thailand Game Festival, building my communication and presentation skills and exploring the game’s business potential.',
+  'นำเสนอผลงาน · Pitch Deck · สื่อสารแนวคิดเกม':'Project presentation · Pitch deck · Communicating a game concept',
+  'นำเสนอเกม BANHAO ในงาน Thailand Game Festival 23 สิงหาคม 2568':'Presenting BANHAO at Thailand Game Festival · August 23, 2025',
+  'นำเสนอเกม BANHAO และ Pitch Deck ในงาน Thailand Game Festival 2025':'Presenting BANHAO and its pitch deck at Thailand Game Festival 2025',
+  'ก.ย. 2025 · Pheoronexis Debater':'Sep 2025 · Pheoronexis Debater','PHEORONEXIS DEBATER OF BU 2568':'PHEORONEXIS DEBATER OF BU 2025',
+  'กิจกรรมโต้วาทีของมหาวิทยาลัย':'University debate event','เปิดรับความท้าทายใหม่':'Taking on a new challenge',
+  'เข้าร่วมทีมโต้วาที ฝึกวิเคราะห์ประเด็น รับฟังมุมมองที่ต่างกัน และสื่อสารด้วยเหตุผล':'I joined the debate team to analyze issues, listen to different perspectives, and communicate with reason.',
+  'คิดเป็นระบบ · สื่อสารอย่างมีเหตุผล':'Structured thinking · Reasoned communication',
+  'ตัดต่อวิดีโอสำหรับกิจกรรม BOOST YOUR MOVE FOR EARTH 2568':'Video editing for BOOST YOUR MOVE FOR EARTH 2025',
+  'ตัดต่อวิดีโอให้กิจกรรม BOOST YOUR MOVE FOR EARTH ปี 2568':'Editing a video for BOOST YOUR MOVE FOR EARTH 2025',
+  '7 พ.ย. 2025 · งาน สสอท.':'Nov 7, 2025 · Association of Thai ICT Industry',
+  'ตัดต่อวิดีโอให้กิจกรรม':'Editing a video for an event','ได้รับโอกาสช่วยตัดต่อคลิปสำหรับกิจกรรม BOOST YOUR MOVE FOR EARTH 2568':'I had the opportunity to edit a video for BOOST YOUR MOVE FOR EARTH 2025.',
+  'ตัดต่อวิดีโอ · เล่าเรื่องผ่านสื่อ · รับผิดชอบงานตามเวลา':'Video editing · Visual storytelling · Meeting deadlines',
+  'มี.ค. 2026 · BU x VIVERSE Game Jam':'Mar 2026 · BU x VIVERSE Game Jam',
+  'ร่วมแข่งขัน BU x VIVERSE Game Jam':'Competing in BU x VIVERSE Game Jam',
+  'พัฒนาเกม Little Dreamland เพื่อเข้าแข่งขันในรายการ BU x VIVERSE Game Jam และได้รับรางวัล First Runner-up พร้อมรางวัล Most Creative World':'I created Little Dreamland for the BU x VIVERSE Game Jam, winning First Runner-up and Most Creative World.',
+  'รางวัลที่ได้รับ':'Awards','ดูผลงาน Little Dreamland ↗':'View Little Dreamland ↗',
+  'ผลงาน BU x VIVERSE Game Jam':'BU x VIVERSE Game Jam project',
+  '2026 · รองประธานคณะกรรมการนักศึกษา · BU ITI':'2026 · Student Council Vice President · BU ITI',
+  'รับบทบาทรองประธานคณะกรรมการนักศึกษา':'Serving as Student Council Vice President',
+  'ได้รับความไว้วางใจให้ร่วมวางแผน ประสานงาน และขับเคลื่อนกิจกรรมของคณะเทคโนโลยีสารสนเทศและนวัตกรรม':'I was entrusted with planning, coordinating, and supporting activities at the School of Information Technology and Innovation.',
+  'วางแผนกิจกรรม · ประสานงานทีม · สนับสนุนกิจกรรมนักศึกษา':'Event planning · Team coordination · Student activities',
+  'นันธวัฒน์ช่วยงานกิจกรรม BU ITI · 2026':'Nanthawat supporting a BU ITI event · 2026',
+  'นันธวัฒน์ในเสื้อเชิ้ตสีขาวขณะช่วยงานกิจกรรม BU ITI':'Nanthawat supporting a BU ITI event in a white shirt',
+  '2026 · Google Student Ambassador · Batch 2':'2026 · Google Student Ambassador · Batch 2',
+  'บทบาท Google Student Ambassador Batch 2':'Google Student Ambassador Batch 2',
+  'แบ่งปันความรู้ในชุมชนนักศึกษา':'Sharing knowledge with the student community',
+  'ร่วมแบ่งปันประสบการณ์และความรู้ด้านเทคโนโลยีกับชุมชนนักศึกษา ในบทบาท Google Student Ambassador':'As a Google Student Ambassador, I share technology knowledge and experiences with the student community.',
+  'สื่อสารเรื่องเทคโนโลยี · แลกเปลี่ยนความรู้กับนักศึกษา':'Communicating about technology · Sharing knowledge with students',
+  'เรียน ทำงาน':'Study & work','และแบ่งปันความรู้':'and share what I learn',
+  'รับทุน Tech Talent จากมหาวิทยาลัยกรุงเทพ':'Receiving the Tech Talent Scholarship at Bangkok University',
+  'ประสบการณ์ทำงานพาร์ตไทม์ที่ Burger King':'Part-time work experience at Burger King',
+  'การศึกษา':'Education','บทบาทใหม่':'New role','งานปัจจุบัน':'Current job','พาร์ตไทม์ที่ Burger King':'Part-time at Burger King',
+  'นักศึกษาชั้นปีที่ 2 สาขา Game & Interactive Media มหาวิทยาลัยกรุงเทพ':'Second-year Game & Interactive Media student at Bangkok University.',
+  'แบ่งปันประสบการณ์ด้านเทคโนโลยีกับชุมชนนักศึกษา':'Sharing technology experiences with the student community.',
+  'ทำงานควบคู่กับการเรียน พร้อมฝึกวินัย ความรับผิดชอบ และการจัดการเวลา':'Balancing work and study while building discipline, responsibility, and time management.',
+  'บทบาทคณะกรรมการ':'Student leadership','รองประธานคณะกรรมการนักศึกษา':'Student Council Vice President',
+  'คณะเทคโนโลยีสารสนเทศและนวัตกรรม ร่วมวางแผน ประสานงาน และขับเคลื่อนกิจกรรมนักศึกษา':'School of Information Technology and Innovation · Planning, coordinating, and supporting student activities.',
+  'สิ่งที่ได้ลองทำ':'Selected work','ทั้งหมด':'All','AI / เวิร์กช็อป':'AI / Workshops','เกม':'Games','เว็บไซต์':'Websites',
+  'เวิร์กช็อป · แบ่งปันความรู้':'Workshop · Knowledge sharing','เวิร์กช็อปสร้างตัวละครเกมจากภาพร่าง':'Sketch-to-game character workshop',
+  'เวิร์กช็อปสร้างตัวละครเกมด้วย AI และ Unreal Engine':'A hands-on workshop in game character creation with AI and Unreal Engine.',
+  'ดูเรื่องราว ↗':'View story ↗','เกม Little Dreamland':'Little Dreamland game','เกมแจม':'Game Jam',
+  'AI · เวิร์กช็อป':'AI · Workshop','เวิร์กช็อปพัฒนาเกมด้วย Google AI Studio':'Game development workshop with Google AI Studio',
+  'ลองใช้ AI เป็นเครื่องมือ':'Exploring AI as a creative tool','ทดลองใช้ AI Studio ในกิจกรรมพัฒนาเกม':'Experimenting with AI Studio during a game development activity.',
+  'หน้าเริ่มเกม The IT Support Hero':'The IT Support Hero start screen','เกม · IT SUPPORT':'Game · IT SUPPORT',
+  'เกมจำลอง IT Support · Google AI Studio':'IT support simulation · Google AI Studio',
+  'เกมจำลอง 3 มิติบนเว็บ ให้ลองแก้ปัญหาคอมพิวเตอร์และรับมือเหตุฉุกเฉินในออฟฟิศ':'A 3D browser game where you troubleshoot computers and handle office emergencies.',
+  'แดชบอร์ด CaseLink G5 มุมมอง Mind Map':'CaseLink G5 dashboard in mind map view','เว็บ · จัดการคดี':'Web · Case management',
+  'เว็บไซต์จัดการข้อมูลคดี · Google AI Studio':'Case management web app · Google AI Studio',
+  'ช่วยทนายเห็นภาพรวมข้อมูลและเข้าใจเหตุการณ์ในคดีได้ง่ายขึ้น':'Helping lawyers see the big picture and understand case events more clearly.',
+  'เกม · NSC':'Game · NSC','หน้าเมนูเกมบ้านเฮา เกมจำลองการทำฟาร์มในภาคอีสาน':'BANHAO game menu · An Isan-inspired farming game',
+  'บ้านเฮา':'BANHAO','เกมจำลองการทำฟาร์มในภาคอีสาน พัฒนาร่วมกับทีม BanHao Team':'An Isan-inspired farming game, developed with the BANHAO Team.',
+  'ดูเกมบน itch.io ↗':'Play on itch.io ↗','เวิร์กช็อปพัฒนาเกมด้วย Google AI Studio':'Game development workshop with Google AI Studio',
+  'ภาพระหว่างทาง':'Moments along the way','งาน กิจกรรม และผู้คนที่ได้พบ':'Work, events, and people I have met',
+  'ภาพจากงาน กิจกรรม และผู้คนที่ได้พบ':'Photos from work, events, and people I have met',
+  'ภาพส่วนตัวในลุคเสื้อแจ็กเก็ตสีน้ำตาลจาก Instagram':'A personal portrait in a brown jacket',
+  'ภาพถ่ายขาวดำระหว่างวัน จาก Instagram':'A black-and-white portrait from an ordinary day',
+  'ช่วยแนะนำการใช้คอมพิวเตอร์ในกิจกรรมของวิทยาลัย':'Helping participants use computers at a college event',
+  'ช่วยเหลือผู้เข้าร่วมกิจกรรมระหว่างใช้คอมพิวเตอร์':'Assisting participants with computers',
+  'ร่วมกิจกรรมกับเพื่อนในห้องปฏิบัติการคอมพิวเตอร์':'Working with classmates in a computer lab',
+  'นำเสนอและสื่อสารต่อหน้าผู้ร่วมกิจกรรม':'Presenting to event participants',
+  'ร่วมการแข่งขันทักษะวิชาชีพปี 2567':'At the 2024 vocational skills competition',
+  'เดินทางและใช้เวลากับเพื่อนร่วมทีม':'Traveling with teammates','เล่น BB Gun ในกิจกรรมยามว่าง':'Playing BB Gun in my free time',
+  'ชมวิวทิวทัศน์ระหว่างการเดินทาง':'Taking in the view while traveling',
+  'ร่วมกิจกรรมและทำงานกับทีมสารสนเทศ':'Working with the college IT team',
+  'ช่วยงานด้านสารสนเทศและคอมพิวเตอร์':'Supporting IT and computer activities',
+  'ภาพระหว่างกิจกรรมและประสบการณ์ในช่วงนักศึกษา':'Moments from my student life',
+  'เวลาว่าง · หนังรอมคอมคลาสสิก · เพลงโฟล์ก · เล่นกีตาร์ · ร้องเพลง · เล่นเกม · เล่น BB Gun':'Free time · Classic rom-coms · Folk music · Guitar · Singing · Games · BB Gun',
+  'มาคุยหรือ':'Let’s talk','ร่วมงานกัน':'Work together',
+  'เปิดรับโปรเจกต์เกม เทคโนโลยีสร้างสรรค์ และโอกาสฝึกงาน':'Open to game projects, creative technology, and internship opportunities.',
+  'นันธวัฒน์ คมคาย · Portfolio 2026':'Portfolio 2026',
+  'สลับโหมดการแสดงผล':'Toggle display mode'
+};
+const languageTextNodes=[];
+const languageWalker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+while(languageWalker.nextNode()){const node=languageWalker.currentNode;if(node.parentElement?.closest('.language-switch'))continue;languageTextNodes.push({node,original:node.nodeValue})}
+const languageAttributeNames=['alt','aria-label','title','data-caption'];
+const languageAttributes=[...document.body.querySelectorAll('*')].flatMap(element=>languageAttributeNames.filter(name=>element.hasAttribute(name)).map(name=>({element,name,original:element.getAttribute(name)})));
+const languageButtons=[...document.querySelectorAll('[data-language-option]')],languageGroup=document.querySelector('.language-switch');
+const metaDescription=document.querySelector('meta[name="description"]');
+const thaiDescription=metaDescription?.content||'';
+function setSiteLanguage(language){
+  const lang=language==='en'?'en':'th',english=lang==='en';
+  document.documentElement.lang=lang;document.body.classList.toggle('lang-en',english);
+  languageTextNodes.forEach(({node,original})=>{const key=original.trim();if(!key)return;const start=original.indexOf(key);node.nodeValue=english?original.slice(0,start)+(englishCopy[key]||key)+original.slice(start+key.length):original});
+  languageAttributes.forEach(({element,name,original})=>element.setAttribute(name,english?(englishCopy[original]||original):original));
+  languageButtons.forEach(button=>{const active=button.dataset.languageOption===lang;button.setAttribute('aria-pressed',String(active));button.setAttribute('aria-label',active?(english?'Selected language: English':'เลือกภาษาไทย'):(button.dataset.languageOption==='en'?'Switch to English':'เปลี่ยนเป็นภาษาไทย'))});
+  languageGroup?.setAttribute('aria-label',english?'Choose language':'เลือกภาษา');
+  if(metaDescription)metaDescription.content=english?'Nanthawat Khomkhai — Game & Interactive Media student exploring technology, creative projects, and hands-on learning.':thaiDescription;
+  localStorage.setItem('ntw-portfolio-language',lang);
+}
+languageButtons.forEach(button=>button.addEventListener('click',()=>setSiteLanguage(button.dataset.languageOption)));
+setSiteLanguage(localStorage.getItem('ntw-portfolio-language')||'th');
 </script>
 </body></html>
