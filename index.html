@@ -435,6 +435,19 @@ body.dark-mode .social:hover{background:#d8b45f;color:#0b0e0c}
 body.dark-mode footer{background:var(--paper);color:#969d92}
 body.dark-mode .photo-credit{color:#a6ab9f}
 @media(prefers-reduced-motion:reduce){.poster,.poster-card,.theme-wash,.poster-face img{transition:none!important}}
+
+/* Keep all four current-role cards on one row on desktop screens. */
+@media(min-width:981px){
+ .now-grid{grid-template-columns:repeat(4,minmax(0,1fr));align-items:stretch}
+ .now-grid .now-card.wide{grid-column:span 1;display:block}
+ .now-grid .now-card.wide .now-cover{height:clamp(210px,18vw,300px);min-height:0}
+ .now-grid .now-card.wide .now-body{display:block;padding:clamp(14px,1.35vw,19px)}
+ .now-grid .now-top{align-items:flex-start;flex-wrap:wrap;gap:8px}
+ .now-grid .now-id{margin-left:auto;text-align:right}
+ .now-grid .now-body h3{font-size:clamp(1.1rem,1.25vw,1.35rem);line-height:1.2;letter-spacing:-.02em}
+ .now-grid .now-body p{font-size:.86rem}
+}
+body.dark-mode .hero .field-sprig{display:none}
 </style>
 </head>
 <body>
