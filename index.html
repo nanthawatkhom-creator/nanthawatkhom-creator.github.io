@@ -49,8 +49,9 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:1000;o
 .work-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px}.tab{border:1px solid var(--line);padding:9px 12px;border-radius:999px;background:#fffaf0;color:#59687d;font:700 .66rem/1 var(--sans);letter-spacing:.08em;text-transform:uppercase;cursor:pointer}.tab.active,.tab:hover{background:var(--ink);color:#fff;border-color:var(--ink)}.work-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}.work-card{grid-column:span 6;border:1px solid var(--line);border-radius:28px;overflow:hidden;background:#fffdf7;transition:.3s}.work-card.feature{grid-column:span 8}.work-card.small{grid-column:span 4}.work-card:hover{transform:translateY(-5px);box-shadow:0 24px 70px rgba(20,35,55,.09)}.work-image{height:300px;background:#d9d1c5;overflow:hidden;position:relative}.work-card.feature .work-image{height:380px}.work-card.small .work-image{height:250px}.work-image img{width:100%;height:100%;object-fit:cover;transition:transform .7s ease}.work-card:hover .work-image img{transform:scale(1.045)}.work-label{position:absolute;top:13px;left:13px;padding:7px 9px;border-radius:10px;background:rgba(11,23,40,.84);color:#fff;font:700 .6rem/1 var(--sans);letter-spacing:.1em}.work-body{padding:22px}.work-meta{color:#7d8794;font:700 .64rem/1 var(--sans);letter-spacing:.14em;text-transform:uppercase}.work-body h3{margin:8px 0 8px;font:700 clamp(1.6rem,3vw,2.6rem)/.97 var(--sans);letter-spacing:-.055em}.work-body p{color:#687382;margin:0}.work-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:18px}.work-tags{display:flex;flex-wrap:wrap;gap:6px}.work-tags span{font-size:.65rem;padding:6px 8px;border:1px solid var(--line);border-radius:999px}.work-link{font:700 .67rem/1 var(--sans);letter-spacing:.06em}
 
 .work-image iframe{display:block;width:100%;height:100%;border:0}
-button.event-source-link{display:inline-block;margin-top:14px;padding:0;border:0;background:none;color:#516d9c;font:700 .82rem/1.5 var(--sans);text-align:left;text-decoration:underline;text-decoration-color:rgba(81,109,156,.45);text-underline-offset:4px;cursor:pointer}
+.event-source-link{display:inline-block;margin-top:14px;padding:0;border:0;background:none;color:#516d9c;font:700 .82rem/1.5 var(--sans);text-align:left;text-decoration:underline;text-decoration-color:rgba(81,109,156,.45);text-underline-offset:4px;cursor:pointer}
 .event-source-link:hover{color:#314f7d;text-decoration-color:currentColor}
+.event-source-link:focus-visible{outline:2px solid currentColor;outline-offset:4px}
 body.dark-mode .event-source-link{color:var(--yellow);text-decoration-color:currentColor}
 
 /* SNAPSHOTS */
@@ -557,7 +558,7 @@ body.lang-en .event-media:after{content:"Click to enlarge"}
         <div class="event-dot">2024</div>
         <div class="event-card alt">
           <div class="event-media" data-lightbox data-src="assets/beauty-internship-certificate.png" data-caption="ฝึกงานด้าน Graphic Design และหนังสือรับรองจาก BEAUTY WORLD"><img src="assets/beauty-internship-certificate.png" alt="ฝึกงานที่ BEAUTY WORLD ขณะใช้คอมพิวเตอร์ พร้อมหนังสือรับรอง"></div>
-          <div class="event-copy"><div class="event-meta">ช่วง ปวช. 2–3 · BEAUTY WORLD</div><h3>IT Support และ Graphic Design</h3><p>ฝึกงานด้าน IT Support และ Graphic Design ที่ BEAUTY WORLD อุดรธานี ช่วง ปวช. 2 ตั้งแต่มกราคมถึงพฤศจิกายน 2024 และกลับมาทำงานช่วงปิดเทอมปี 2026</p><div class="learning"><b>ทักษะที่ได้</b>สนับสนุน IT · สื่อสารด้วยภาพ · ทำงานตามโจทย์จริง</div></div>
+          <div class="event-copy"><div class="event-meta">ช่วง ปวช. 2–3 · BEAUTY WORLD</div><h3>IT Support และ Graphic Design</h3><p>ฝึกงานด้าน IT Support และ Graphic Design ที่ BEAUTY WORLD อุดรธานี ช่วง ปวช. 2 ตั้งแต่มกราคมถึงพฤศจิกายน 2024 และกลับมาทำงานช่วงปิดเทอมปี 2026</p><a class="event-source-link" href="https://canva.link/0qihta5ncbrw2sc" target="_blank" rel="noopener noreferrer" aria-label="ดูผลงาน BEAUTY WORLD บน Canva (เปิดแท็บใหม่)">ดูผลงาน ↗</a><div class="learning"><b>ทักษะที่ได้</b>สนับสนุน IT · สื่อสารด้วยภาพ · ทำงานตามโจทย์จริง</div></div>
         </div>
       </article>
 
@@ -814,6 +815,7 @@ const englishCopy={
   'ช่วง ปวช. 2–3 · BEAUTY WORLD':'Vocational years 2–3 · BEAUTY WORLD','IT Support และ Graphic Design':'IT Support & Graphic Design',
   'ฝึกงานด้าน IT Support และ Graphic Design ที่ BEAUTY WORLD อุดรธานี ช่วง ปวช. 2 ตั้งแต่มกราคมถึงพฤศจิกายน 2024 และกลับมาทำงานช่วงปิดเทอมปี 2026':'I interned in IT support and graphic design at BEAUTY WORLD in Udon Thani from January to November 2024, then returned to work during the 2026 break.',
   'สนับสนุน IT · สื่อสารด้วยภาพ · ทำงานตามโจทย์จริง':'IT support · Visual communication · Real-world briefs',
+  'ดูผลงาน ↗':'View work ↗','ดูผลงาน BEAUTY WORLD บน Canva (เปิดแท็บใหม่)':'View BEAUTY WORLD work on Canva (opens in a new tab)',
   '2024 · National Software Contest ครั้งที่ 26':'2024 · 26th National Software Contest','เข้าร่วมการแข่งขัน NSC ครั้งที่ 26':'Competing in the 26th National Software Contest',
   'พัฒนาเกม “บ้านเฮา” ในบทบาทนักพัฒนาและหัวหน้าทีมโปรเจกต์ ผ่านเข้ารอบชิงชนะเลิศระดับประเทศ':'I developed “BANHAO” as the developer and project lead, reaching the national finals.',
   'บทบาท':'Role','เกมบ้านเฮา ผลงานเข้าร่วม National Software Contest':'BANHAO, entered in the National Software Contest',
