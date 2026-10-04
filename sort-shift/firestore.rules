@@ -1,0 +1,27 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /sortshift_scores/{scoreId} {
+      allow read: if true;
+      allow create: if request.resource.data.name is string
+                    && request.resource.data.name.size() <= 12
+                    && request.resource.data.score is number
+                    && request.resource.data.score >= 0
+                    && request.resource.data.score <= 50000
+                    && request.resource.data.co2e is number
+                    && request.resource.data.co2e >= 0
+                    && request.resource.data.co2e <= 20
+                    && request.resource.data.accuracy is number
+                    && request.resource.data.accuracy >= 0
+                    && request.resource.data.accuracy <= 100;
+      allow update, delete: if false;
+    }
+    match /sortshift_meta/community {
+      allow read: if true;
+      allow create, update: if request.resource.data.plays is number
+                            && request.resource.data.co2e is number
+                            && request.resource.data.items is number;
+      allow delete: if false;
+    }
+  }
+}

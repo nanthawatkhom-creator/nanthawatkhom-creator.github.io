@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+<defs>
+  <filter id="shadow" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="10" stdDeviation="8" flood-color="#624A68" flood-opacity=".22"/></filter>
+  <linearGradient id="shine" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity=".9"/><stop offset=".45" stop-color="#ffffff" stop-opacity=".15"/><stop offset="1" stop-color="#000000" stop-opacity=".08"/></linearGradient>
+</defs>
+<g filter="url(#shadow)"><ellipse cx="128" cy="215" rx="61" ry="13" fill="#5C6B62" opacity=".16"/><path d="M128 40 C166 40 196 72 196 117 C196 170 166 205 128 205 C90 205 60 170 60 117 C60 72 90 40 128 40Z" fill="#BDEBD1" stroke="#5BA77A" stroke-width="6"/><path d="M128 61 C111 73 103 92 105 112 C128 102 146 85 153 62 C145 56 136 54 128 61Z" fill="#73C890"/><circle cx="101" cy="124" r="7" fill="#3F4852"/><circle cx="155" cy="124" r="7" fill="#3F4852"/><path d="M108 151 C121 163 137 163 149 151" fill="none" stroke="#3F4852" stroke-width="6" stroke-linecap="round"/><circle cx="88" cy="144" r="12" fill="#F5B5C9" opacity=".65"/><circle cx="168" cy="144" r="12" fill="#F5B5C9" opacity=".65"/></g>
+</svg>
